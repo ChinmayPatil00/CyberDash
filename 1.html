@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Player</title>
+  <link rel="stylesheet" href="2style.css">
+<style>
+  </style>
+</head>
+<body>
+  <div class="player">
+    <!-- Player Top -->
+    <div class="player-top">
+      <div class="cover">
+        <img id="cover" src="song4.jpg" alt="Album Cover">
+      </div>
+      <div class="song-info">
+        <h3 id="title">Saiyaara</h3>
+        <p id="artist">Arijit Singh</p>
+        <div class="progress" id="progress-container">
+          <div class="progress-bar">
+            <div id="progress"></div>
+          </div>
+          <span id="current-time">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+    </div>
+    <!-- Player Bottom -->
+    <div class="player-bottom">
+      <button id="prev" aria-label="Previous Song">&#9664;&#9664;</button>
+      <button id="play" aria-label="Play/Pause">&#9654;</button>
+      <button id="next" aria-label="Next Song">&#9654;&#9654;</button>
+    </div>
+    <audio id="audio"></audio>
+  </div>
+  <script src="3file.js"></script>
+</body>
+</html>
