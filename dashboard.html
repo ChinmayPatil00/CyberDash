@@ -58,11 +58,10 @@
       <div style="display: flex; gap: 20px; flex: 1;">
         <!-- Radar Section -->
         <div class="hw-panel" style="padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;">
-          <h3 style="margin-bottom: 30px; color: var(--text-muted);">SURFACE SCANNER</h3>
-          <div class="radar-container">
+          <h3 style="margin-bottom: 10px; color: var(--text-muted);">SURFACE SCANNER</h3>
+          <h4 style="margin-bottom: 20px; color: var(--hud-color);">DATA COLLECTED: <span id="radar-score">0</span></h4>
+          <div class="radar-container" id="radar-container">
             <div class="radar-sweep"></div>
-            <!-- Target dot -->
-            <div style="position: absolute; top: 30%; right: 30%; width: 6px; height: 6px; background: var(--hud-color); border-radius: 50%; box-shadow: 0 0 10px var(--hud-color); animation: blink 2s infinite;"></div>
           </div>
         </div>
         

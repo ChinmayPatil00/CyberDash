@@ -132,6 +132,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Radar Mini-Game (Dashboard Page) ---
+  const radarContainer = document.getElementById('radar-container');
+  if (radarContainer) {
+    let score = 0;
+    const scoreDisplay = document.getElementById('radar-score');
+    
+    // Spawn anomaly every 2.5 seconds
+    setInterval(() => {
+      // Create dot
+      const anomaly = document.createElement('div');
+      anomaly.classList.add('anomaly');
+      
+      // Random position roughly within the circle (20% to 80% to avoid edges)
+      const topPos = 20 + Math.random() * 60;
+      const leftPos = 20 + Math.random() * 60;
+      anomaly.style.top = `${topPos}%`;
+      anomaly.style.left = `${leftPos}%`;
+      
+      radarContainer.appendChild(anomaly);
+      playBeep('short'); // Soft beep on spawn
+      
+      // Handle Click (Resolve)
+      anomaly.addEventListener('click', function() {
+        if (!this.classList.contains('resolved')) {
+          this.classList.add('resolved');
+          playBeep('short');
+          
+          score += 10;
+          if (scoreDisplay) scoreDisplay.innerText = score;
+          
+          // Remove after visual confirmation
+          setTimeout(() => {
+            if (this.parentNode === radarContainer) radarContainer.removeChild(this);
+          }, 800);
+        }
+      });
+      
+      // Auto-remove if missed after 3 seconds
+      setTimeout(() => {
+        if (anomaly.parentNode === radarContainer && !anomaly.classList.contains('resolved')) {
+          radarContainer.removeChild(anomaly);
+        }
+      }, 3000);
+      
+    }, 2500);
+  }
+
   // --- Simulated Comms Log (Settings Page) ---
   const commsLog = document.getElementById('comms-log');
   if (commsLog) {

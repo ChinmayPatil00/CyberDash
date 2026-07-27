@@ -222,3 +222,48 @@ body {
   background: var(--hud-color);
   color: #000;
 }
+
+/* Radar Game Anomalies */
+.anomaly {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--hud-alert);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--hud-alert);
+  cursor: crosshair;
+  animation: blink 1s infinite;
+  z-index: 10;
+  transition: all 0.3s;
+}
+.anomaly.resolved {
+  background: #00ff00;
+  box-shadow: 0 0 20px #00ff00;
+  transform: scale(1.5);
+  animation: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 850px) {
+  .layout {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .sidebar {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .main-view {
+    flex-direction: column !important; /* Forces stacking even on settings page */
+  }
+  .radar-container {
+    width: 200px;
+    height: 200px;
+  }
+  .hw-panel {
+    padding: 20px !important;
+  }
+  body {
+    background-size: 15px 15px; /* Smaller grid on mobile */
+  }
+}
