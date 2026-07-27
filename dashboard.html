@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aurora | Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar neu-panel" style="border-radius: 0; box-shadow: 5px 0 15px var(--neu-shadow-dark);">
+      <h2>AURORA</h2>
+      <a href="dashboard.html" class="neu-button active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#" class="neu-button"><i class="fas fa-music"></i> Library</a>
+      <a href="settings.html" class="neu-button"><i class="fas fa-cog"></i> Settings</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h1 style="margin-bottom: 30px;">Overview</h1>
+      
+      <div class="grid-2">
+        <!-- The Media Player (Neumorphic) -->
+        <div class="neu-panel" style="padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+          <h3 style="align-self: flex-start; color: var(--text-muted);">Now Playing</h3>
+          
+          <div class="neu-panel" style="width: 150px; height: 150px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&q=80') center/cover;">
+          </div>
+          
+          <div style="text-align: center;">
+            <h2>Synthwave Dream</h2>
+            <p style="color: var(--text-muted);">SoundHelix</p>
+          </div>
+          
+          <div style="display: flex; gap: 15px;">
+            <button class="neu-button" style="border-radius: 50%; width: 50px; height: 50px;"><i class="fas fa-backward"></i></button>
+            <button class="neu-button btn-accent" style="border-radius: 50%; width: 60px; height: 60px; font-size: 1.2rem;"><i class="fas fa-play"></i></button>
+            <button class="neu-button" style="border-radius: 50%; width: 50px; height: 50px;"><i class="fas fa-forward"></i></button>
+          </div>
+          
+          <div style="width: 100%; height: 8px; background: var(--neu-bg); border-radius: 4px; box-shadow: inset 2px 2px 5px var(--neu-shadow-dark), inset -2px -2px 5px var(--neu-shadow-light); margin-top: 10px;">
+            <div style="width: 45%; height: 100%; background: var(--accent); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow);"></div>
+          </div>
+        </div>
+
+        <!-- Simulated Analytics (Glassmorphic) -->
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+          <div class="glass-panel" style="padding: 30px; flex: 1;">
+            <h3 style="color: var(--text-muted); margin-bottom: 15px;">Total Playtime</h3>
+            <h1 style="font-size: 3rem; color: var(--accent);">124 <span style="font-size: 1.5rem; color: var(--text-main);">hrs</span></h1>
+            <div style="margin-top: 20px; height: 100px; border-bottom: 2px solid rgba(255,255,255,0.1); display: flex; align-items: flex-end; gap: 10px;">
+              <!-- Fake Bar Chart -->
+              <div style="width: 15%; height: 40%; background: var(--accent); border-radius: 4px 4px 0 0;"></div>
+              <div style="width: 15%; height: 70%; background: var(--accent); border-radius: 4px 4px 0 0;"></div>
+              <div style="width: 15%; height: 50%; background: var(--accent); border-radius: 4px 4px 0 0;"></div>
+              <div style="width: 15%; height: 90%; background: var(--accent); border-radius: 4px 4px 0 0; box-shadow: 0 0 15px var(--accent-glow);"></div>
+              <div style="width: 15%; height: 30%; background: var(--accent); border-radius: 4px 4px 0 0;"></div>
+            </div>
+          </div>
+          
+          <div class="neu-panel" style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h4 style="color: var(--text-muted);">Top Track</h4>
+              <h3>Electronic Dream</h3>
+            </div>
+            <button class="neu-button" style="border-radius: 50%; width: 40px; height: 40px;"><i class="fas fa-ellipsis-v"></i></button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
