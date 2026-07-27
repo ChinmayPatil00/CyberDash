@@ -23,14 +23,16 @@
     </div>
 
     <!-- Hidden Manual Panel -->
+    <!-- Hidden Manual Panel -->
     <div id="manual-panel" class="sci-panel" style="display: none; padding: 40px; text-align: left; max-width: 800px; margin-top: 20px;">
-      <h2 class="text-glow" style="margin-bottom: 20px; text-align: center;">A.R.E.S. SYSTEM ARCHITECTURE</h2>
+      <h2 class="text-glow" style="margin-bottom: 20px; text-align: center;">A.R.E.S. FEATURE MANUAL</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem; text-align: center;">Welcome to the Mars Rover Control Panel simulator. Here is what you can do:</p>
       <ul style="list-style-type: none; line-height: 1.8; color: var(--text-main); font-size: 1.1rem; display: flex; flex-direction: column; gap: 15px;">
-        <li><strong style="color: var(--hud-color);">[1] INTERACTIVE COMMAND LINE (CLI):</strong> Navigate to the Comms Log to access a fully functional terminal. Type operational commands to retrieve real-time simulated telemetry and interface responses.</li>
-        <li><strong style="color: var(--hud-color);">[2] ENVIRONMENTAL STATE ENGINE:</strong> The Dashboard override controls are physically bound to the UI environment. Engaging Shields or Floodlights will dynamically alter the page's visual rendering and atmospheric lighting via CSS state manipulation.</li>
-        <li><strong style="color: var(--hud-color);">[3] TACTILE NEUMORPHISM:</strong> All hardware interfaces utilize advanced 3D shadowing mechanics (Neumorphism), providing highly responsive tactile feedback upon interaction.</li>
-        <li><strong style="color: var(--hud-color);">[4] SYNTHETIC AUDIO GENERATION:</strong> Audio feedback is generated dynamically in real-time using the native Web Audio API oscillators, eliminating the need for static sound files.</li>
-        <li><strong style="color: var(--hud-color);">[5] PERSISTENT HUD CONFIGURATION:</strong> The interface color scheme can be overridden via the Settings terminal. Configuration state is maintained across sessions using local storage protocols.</li>
+        <li><strong style="color: var(--hud-color);">[1] ANOMALY DETECTION GAME:</strong> On the Telemetry Dashboard, watch the Surface Scanner. Blinking red dots (anomalies) will spawn randomly. Click them quickly to resolve them and collect data points!</li>
+        <li><strong style="color: var(--hud-color);">[2] ENVIRONMENTAL CONTROLS:</strong> Use the 4 manual override buttons on the dashboard to physically change your environment. Turn on the Floodlights to illuminate the background, or activate Shields to wrap the screen in a glowing blue forcefield.</li>
+        <li><strong style="color: var(--hud-color);">[3] INTERACTIVE COMMAND TERMINAL:</strong> Navigate to the Comms Log to access a real typing terminal. Try typing commands like <code>/status</code>, <code>/ping</code>, or <code>/override</code> and hit Enter to receive simulated telemetry responses.</li>
+        <li><strong style="color: var(--hud-color);">[4] HUD COLOR OVERRIDE:</strong> In the Comms Log, you can switch the entire interface theme from standard Cyan to Alert Red. This preference saves to your browser automatically.</li>
+        <li><strong style="color: var(--hud-color);">[5] REACTIVE AUDIO:</strong> Turn up your volume! Every button you press generates authentic, synthesized sci-fi sounds (beeps, clicks, and sirens) in real-time.</li>
       </ul>
     </div>
   <script src="app.js"></script>
