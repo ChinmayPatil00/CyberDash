@@ -72,6 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btn-cyan').classList.remove('active');
         btn.classList.add('active');
         playBeep('alert'); // Play alert sound for red mode!
+      } else if (btn.classList.contains('toggle-btn')) {
+        // Handle dashboard toggle buttons
+        btn.classList.toggle('active');
+        const span = btn.querySelector('span');
+        if (span) {
+          const text = span.innerText;
+          if (btn.classList.contains('active')) {
+            if (!text.includes(': ON')) span.innerText = text + ': ON';
+          } else {
+            span.innerText = text.replace(': ON', '');
+          }
+        }
       }
     });
   });
