@@ -1,123 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 :root {
-  --bg-color: #1a1a24;
-  --text-main: #ffffff;
-  --text-muted: #8b8c9d;
-  --accent: #00f0ff;
-  --accent-glow: rgba(0, 240, 255, 0.5);
+  --bg-dark: #0a0e17;
+  --panel-bg: #111827;
+  --hud-color: #00f0ff; /* Cyan by default */
+  --hud-glow: rgba(0, 240, 255, 0.4);
+  --hud-alert: #ff2a2a;
+  --text-main: #e2e8f0;
+  --text-muted: #64748b;
   
-  /* Neumorphism specific */
-  --neu-bg: #1a1a24;
-  --neu-shadow-light: rgba(255, 255, 255, 0.05);
-  --neu-shadow-dark: rgba(0, 0, 0, 0.5);
+  /* Neumorphism (Hardware look) */
+  --neu-light: rgba(255, 255, 255, 0.03);
+  --neu-dark: rgba(0, 0, 0, 0.8);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 body {
-  background-color: var(--bg-color);
+  background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
 
-/* Background Animated Gradient for Landing Page */
-.bg-animated {
+/* Glassmorphic Sci-Fi Panels */
+.sci-panel {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--hud-color);
+  box-shadow: 0 0 15px var(--hud-glow), inset 0 0 20px rgba(0,0,0,0.8);
+  border-radius: 4px;
+}
+
+/* Hardware Neumorphic Panels */
+.hw-panel {
+  background: var(--panel-bg);
+  border-radius: 8px;
+  box-shadow: 5px 5px 15px var(--neu-dark), -5px -5px 15px var(--neu-light);
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+.hw-button {
+  background: var(--panel-bg);
+  color: var(--text-main);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 4px 4px 10px var(--neu-dark), -4px -4px 10px var(--neu-light);
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+.hw-button:active, .hw-button.active {
+  box-shadow: inset 4px 4px 10px var(--neu-dark), inset -4px -4px 10px var(--neu-light);
+  color: var(--hud-color);
+  border: 1px solid var(--hud-glow);
+}
+
+.text-glow {
+  color: var(--hud-color);
+  text-shadow: 0 0 10px var(--hud-glow);
+}
+
+/* Radar Animation */
+.radar-container {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 2px solid var(--hud-color);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px var(--hud-glow), inset 0 0 30px var(--hud-glow);
+  background: repeating-radial-gradient(transparent, transparent 20px, rgba(0,240,255,0.2) 21px);
+}
+
+.radar-sweep {
+  width: 50%;
+  height: 50%;
+  background: linear-gradient(45deg, var(--hud-glow), transparent);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: bottom left;
+  animation: sweep 4s linear infinite;
+}
+
+@keyframes sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Scanline Overlay */
+.scanlines {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
-  background: radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.2), transparent 50%),
-              radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.15), transparent 50%);
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
 
-/* Glassmorphism Classes */
-.glass-panel {
-  background: rgba(26, 26, 36, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* Neumorphism Classes */
-.neu-panel {
-  background: var(--neu-bg);
-  border-radius: 20px;
-  box-shadow: 8px 8px 16px var(--neu-shadow-dark),
-              -8px -8px 16px var(--neu-shadow-light);
-}
-
-.neu-button {
-  background: var(--neu-bg);
-  border: none;
-  color: var(--text-main);
-  padding: 12px 24px;
-  border-radius: 12px;
-  box-shadow: 5px 5px 10px var(--neu-shadow-dark),
-              -5px -5px 10px var(--neu-shadow-light);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.neu-button:active, .neu-button.active {
-  box-shadow: inset 4px 4px 8px var(--neu-shadow-dark),
-              inset -4px -4px 8px var(--neu-shadow-light);
-  color: var(--accent);
-}
-
-/* Accent Button */
-.btn-accent {
-  background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  box-shadow: 0 0 10px var(--accent-glow);
-}
-.btn-accent:hover {
-  background: var(--accent);
-  color: #000;
-  box-shadow: 0 0 20px var(--accent-glow);
-}
-
-/* Layout - Sidebar & Main (For Dashboard/Settings) */
-.app-layout {
+/* Layout */
+.layout {
   display: flex;
   height: 100vh;
+  padding: 20px;
+  gap: 20px;
 }
 
 .sidebar {
-  width: 250px;
-  padding: 30px;
+  width: 300px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.sidebar h2 {
-  color: var(--accent);
-  margin-bottom: 20px;
-  letter-spacing: 2px;
-}
-
-.main-content {
+.main-view {
   flex: 1;
-  padding: 40px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
-
-/* Typography & Helpers */
-.title { font-size: 3rem; font-weight: 800; margin-bottom: 10px; }
-.subtitle { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 30px; }
-.flex-center { display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
