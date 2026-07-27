@@ -25,7 +25,7 @@
       <div class="sci-panel" style="flex: 2; padding: 30px; display: flex; flex-direction: column;">
         <h3 style="color: var(--hud-color); border-bottom: 1px solid var(--hud-glow); padding-bottom: 10px; margin-bottom: 20px;">>_ INCOMING TRANSMISSIONS</h3>
         
-        <div style="flex: 1; overflow-y: auto; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+        <div id="comms-log" style="flex: 1; overflow-y: auto; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
           <p>[04:22:11] SYSTEM: Uplink established.</p>
           <p>[04:22:12] SYSTEM: Handshake protocol verified.</p>
           <p>[04:22:15] <span class="text-glow">COMMAND: Proceed to Sector 7G.</span></p>
@@ -42,8 +42,8 @@
         <div style="margin-bottom: 30px;">
           <p style="margin-bottom: 10px;">UI THEME OVERRIDE</p>
           <div style="display: flex; gap: 10px;">
-            <button class="hw-button active" style="flex: 1; padding: 10px;">CYAN</button>
-            <button class="hw-button" style="flex: 1; padding: 10px; color: var(--hud-alert);">RED</button>
+            <button id="btn-cyan" class="hw-button active" style="flex: 1; padding: 10px;">CYAN</button>
+            <button id="btn-red" class="hw-button" style="flex: 1; padding: 10px; color: var(--hud-alert);">RED</button>
           </div>
         </div>
 
@@ -58,5 +58,6 @@
   <style>
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   </style>
+  <script src="app.js"></script>
 </body>
 </html>
