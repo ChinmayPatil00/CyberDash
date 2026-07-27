@@ -84,6 +84,27 @@ document.addEventListener('DOMContentLoaded', () => {
             span.innerText = text.replace(': ON', '');
           }
         }
+        
+        // Handle Environmental Triggers
+        if (btn.id === 'btn-floodlights') {
+          document.body.classList.toggle('env-floodlights');
+        } else if (btn.id === 'btn-shields') {
+          document.body.classList.toggle('env-shields');
+        } else if (btn.id === 'btn-cam') {
+          const rec = document.getElementById('rec-indicator');
+          if (rec) rec.classList.toggle('active');
+        } else if (btn.id === 'btn-doors') {
+          // Play heavy clunk sound
+          playBeep('alert');
+          const radar = document.querySelector('.radar-container');
+          if (radar) {
+            if (btn.classList.contains('active')) {
+              radar.style.borderColor = 'red';
+            } else {
+              radar.style.borderColor = 'var(--hud-color)';
+            }
+          }
+        }
       }
     });
   });
@@ -143,6 +164,54 @@ document.addEventListener('DOMContentLoaded', () => {
         commsLog.scrollTop = commsLog.scrollHeight;
         msgIndex++;
       }
-    }, 4000); // New message every 4 seconds
+    }, 5000); // New message every 5 seconds
+    
+    // --- Interactive Terminal Logic ---
+    const terminalInput = document.getElementById('terminal-input');
+    if (terminalInput) {
+      terminalInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const cmd = this.value.trim().toLowerCase();
+          if (cmd === '') return;
+          
+          this.value = '';
+          
+          // Print user command
+          const p = document.createElement('p');
+          p.innerHTML = `<span style="color: #fff;">>_ ${cmd}</span>`;
+          commsLog.insertBefore(p, commsLog.lastElementChild);
+          
+          // Process command
+          setTimeout(() => {
+            const resp = document.createElement('p');
+            const now = new Date();
+            const timeStr = `[${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}]`;
+            
+            if (cmd === '/status') {
+              resp.innerHTML = `${timeStr} SYSTEM: All systems nominal. O2: 84%, PWR: 62%`;
+              playBeep('short');
+            } else if (cmd === '/ping') {
+              resp.innerHTML = `${timeStr} SYSTEM: Pong. Latency 42ms.`;
+              playBeep('short');
+            } else if (cmd === '/override') {
+              resp.innerHTML = `${timeStr} <span style="color: var(--hud-alert);">WARNING: Manual override protocols initiated. Ensure safety harnesses are secured.</span>`;
+              playBeep('alert');
+            } else if (cmd === '/clear') {
+              commsLog.innerHTML = '<p>_ <span style="animation: blink 1s infinite;">|</span></p>';
+              playBeep('short');
+              return; // skip scroll
+            } else {
+              resp.innerHTML = `${timeStr} ERROR: Command not recognized.`;
+              playBeep('short');
+            }
+            
+            commsLog.insertBefore(resp, commsLog.lastElementChild);
+            commsLog.scrollTop = commsLog.scrollHeight;
+          }, 300);
+          
+          commsLog.scrollTop = commsLog.scrollHeight;
+        }
+      });
+    }
   }
 });
