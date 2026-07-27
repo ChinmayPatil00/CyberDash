@@ -15,8 +15,9 @@ function playBeep(type = 'short') {
   if (type === 'short') {
     // A quick, high-tech click
     oscillator.type = 'square';
-    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+    const baseFreq = 700 + Math.random() * 200; // Randomize pitch slightly between 700 and 900
+    oscillator.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(baseFreq / 2, audioCtx.currentTime + 0.1);
     gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
     oscillator.start(audioCtx.currentTime);
@@ -81,6 +82,21 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('btn-red').classList.add('active');
       document.getElementById('btn-cyan').classList.remove('active');
     }
+  }
+
+  // --- Manual Toggle (Index Page) ---
+  const btnManual = document.getElementById('btn-manual');
+  const manualPanel = document.getElementById('manual-panel');
+  if (btnManual && manualPanel) {
+    btnManual.addEventListener('click', () => {
+      if (manualPanel.style.display === 'none') {
+        manualPanel.style.display = 'block';
+        btnManual.classList.add('active');
+      } else {
+        manualPanel.style.display = 'none';
+        btnManual.classList.remove('active');
+      }
+    });
   }
 
   // --- Simulated Comms Log (Settings Page) ---

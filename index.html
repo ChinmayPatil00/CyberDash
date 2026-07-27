@@ -17,9 +17,22 @@
       <p style="font-size: 1.2rem; line-height: 1.5;">Establishing remote uplink to Mars Rover Alpha. Awaiting operator confirmation to deploy telemetry interfaces.</p>
     </div>
     
-    <a href="dashboard.html" class="hw-button" style="font-size: 1.5rem; border: 1px solid var(--hud-color);">INITIATE LINK</a>
-    
-  </div>
+    <div style="display: flex; gap: 20px;">
+      <button id="btn-manual" class="hw-button" style="font-size: 1.2rem;">CLASSIFIED MANUAL</button>
+      <a href="dashboard.html" class="hw-button" style="font-size: 1.2rem; border: 1px solid var(--hud-color);">INITIATE LINK</a>
+    </div>
+
+    <!-- Hidden Manual Panel -->
+    <div id="manual-panel" class="sci-panel" style="display: none; padding: 40px; text-align: left; max-width: 800px; margin-top: 20px;">
+      <h2 class="text-glow" style="margin-bottom: 20px; text-align: center;">>_ A.R.E.S. FEATURE OVERVIEW</h2>
+      <ul style="list-style-type: none; line-height: 1.8; color: var(--text-main); font-size: 1.1rem; display: flex; flex-direction: column; gap: 15px;">
+        <li><strong style="color: var(--hud-color);">[1] NEUMORPHIC HARDWARE UI:</strong> All buttons and dials act like physical hardware controls with realistic 3D shadowing and deep press mechanics.</li>
+        <li><strong style="color: var(--hud-color);">[2] SYNTHETIC AUDIO ENGINE:</strong> Uses the browser's Web Audio API to generate authentic sci-fi interface sounds entirely from code.</li>
+        <li><strong style="color: var(--hud-color);">[3] HUD OVERRIDE:</strong> Navigate to the Comms Log to toggle the interface color scheme between standard Cyan and Alert Red (saves locally).</li>
+        <li><strong style="color: var(--hud-color);">[4] LIVE TELEMETRY:</strong> The Dashboard features a CSS-animated radar scanner and responsive vital gauges.</li>
+        <li><strong style="color: var(--hud-color);">[5] ACTIVE COMMS LOG:</strong> A simulated terminal window that prints incoming encrypted transmissions in real-time, triggering audio alerts for warnings.</li>
+      </ul>
+    </div>
   <script src="app.js"></script>
 </body>
 </html>

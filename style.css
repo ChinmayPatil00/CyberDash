@@ -60,14 +60,23 @@ body {
   letter-spacing: 2px;
   cursor: pointer;
   box-shadow: 4px 4px 10px var(--neu-dark), -4px -4px 10px var(--neu-light);
-  transition: all 0.2s;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   display: inline-block;
   border: 1px solid transparent;
+  transform: scale(1);
+}
+
+.hw-button:hover {
+  transform: scale(1.03);
+  box-shadow: 6px 6px 20px var(--neu-dark), -6px -6px 20px var(--neu-light);
+  color: var(--hud-color);
+  text-shadow: 0 0 8px var(--hud-glow);
 }
 
 .hw-button:active, .hw-button.active {
-  box-shadow: inset 4px 4px 10px var(--neu-dark), inset -4px -4px 10px var(--neu-light);
+  transform: scale(0.95);
+  box-shadow: inset 6px 6px 15px var(--neu-dark), inset -6px -6px 15px var(--neu-light);
   color: var(--hud-color);
   border: 1px solid var(--hud-glow);
 }
