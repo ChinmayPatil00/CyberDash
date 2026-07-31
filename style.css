@@ -243,6 +243,17 @@ body {
   animation: none;
 }
 
+.dashboard-row {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+.override-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 850px) {
   .layout {
@@ -286,15 +297,4 @@ body {
     min-width: 80px;
     text-align: center;
   }
-}
-
-.dashboard-row {
-  display: flex;
-  gap: 20px;
-  flex: 1;
-}
-.override-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
 }
