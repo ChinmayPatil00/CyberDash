@@ -266,4 +266,35 @@ body {
   body {
     background-size: 15px 15px; /* Smaller grid on mobile */
   }
+  .dashboard-row {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+  }
+  .override-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .terminal-input-container {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .cmd-btn {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+  }
+}
+
+.dashboard-row {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+.override-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
