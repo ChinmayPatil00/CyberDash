@@ -1,17 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 :root {
-  --bg-dark: #0a0e17;
-  --panel-bg: #111827;
+  --bg-dark: #050810;
+  --panel-bg: rgba(10, 15, 25, 0.7);
   --hud-color: #00f0ff; /* Cyan by default */
-  --hud-glow: rgba(0, 240, 255, 0.4);
+  --hud-glow: rgba(0, 240, 255, 0.5);
   --hud-alert: #ff2a2a;
   --text-main: #e2e8f0;
   --text-muted: #64748b;
   
-  /* Neumorphism (Hardware look) */
-  --neu-light: rgba(255, 255, 255, 0.03);
-  --neu-dark: rgba(0, 0, 0, 0.8);
+  /* Neumorphism 2.0 (Hardware look) */
+  --neu-light: rgba(255, 255, 255, 0.05);
+  --neu-dark: rgba(0, 0, 0, 0.9);
+  --glass-border: rgba(0, 240, 255, 0.2);
 }
 
 * {
@@ -27,87 +28,157 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  background-image: 
-    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-  background-size: 30px 30px;
+  /* Complex Animated Background */
+  background: 
+    radial-gradient(circle at center, rgba(0, 240, 255, 0.05) 0%, transparent 60%),
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 0 0, 0 40px, 40px 0; }
 }
 
 /* Glassmorphic Sci-Fi Panels */
 .sci-panel {
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--hud-color);
-  box-shadow: 0 0 15px var(--hud-glow), inset 0 0 20px rgba(0,0,0,0.8);
-  border-radius: 4px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-top: 1px solid rgba(255,255,255,0.15); /* Top lighting */
+  border-left: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,240,255,0.05);
+  border-radius: 6px;
+  position: relative;
+}
+
+/* Decorative brackets for sci-panels */
+.sci-panel::before, .sci-panel::after {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--hud-color);
+  pointer-events: none;
+  opacity: 0.5;
+}
+.sci-panel::before {
+  top: -1px; left: -1px;
+  border-right: none; border-bottom: none;
+}
+.sci-panel::after {
+  bottom: -1px; right: -1px;
+  border-left: none; border-top: none;
 }
 
 /* Hardware Neumorphic Panels */
 .hw-panel {
   background: var(--panel-bg);
+  backdrop-filter: blur(10px);
   border-radius: 8px;
-  box-shadow: 5px 5px 15px var(--neu-dark), -5px -5px 15px var(--neu-light);
-  border: 1px solid rgba(255,255,255,0.02);
+  box-shadow: 8px 8px 20px var(--neu-dark), -4px -4px 15px var(--neu-light);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(0,0,0,0.8);
+  position: relative;
 }
 
+/* Advanced Button with light sweep */
 .hw-button {
-  background: var(--panel-bg);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
   color: var(--text-main);
-  border: none;
+  border: 1px solid rgba(255,255,255,0.05);
   padding: 15px 30px;
   border-radius: 4px;
   font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   cursor: pointer;
-  box-shadow: 4px 4px 10px var(--neu-dark), -4px -4px 10px var(--neu-light);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  display: inline-block;
-  border: 1px solid transparent;
-  transform: scale(1);
+  box-shadow: 4px 4px 10px var(--neu-dark), -2px -2px 8px var(--neu-light);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hw-button::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.4s ease;
+}
+
+.hw-button:hover::before {
+  left: 150%;
 }
 
 .hw-button:hover {
-  transform: scale(1.03);
-  box-shadow: 6px 6px 20px var(--neu-dark), -6px -6px 20px var(--neu-light);
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 15px var(--neu-dark), -4px -4px 12px var(--neu-light);
   color: var(--hud-color);
+  border-color: var(--hud-glow);
   text-shadow: 0 0 8px var(--hud-glow);
 }
 
 .hw-button:active, .hw-button.active {
-  transform: scale(0.95);
-  box-shadow: inset 6px 6px 15px var(--neu-dark), inset -6px -6px 15px var(--neu-light);
+  transform: translateY(1px);
+  box-shadow: inset 4px 4px 10px var(--neu-dark), inset -2px -2px 8px var(--neu-light);
   color: var(--hud-color);
-  border: 1px solid var(--hud-glow);
+  border-color: var(--hud-color);
+  background: rgba(0, 240, 255, 0.05);
 }
 
 .text-glow {
   color: var(--hud-color);
-  text-shadow: 0 0 10px var(--hud-glow);
+  text-shadow: 0 0 10px var(--hud-glow), 0 0 20px var(--hud-glow);
+  letter-spacing: 2px;
 }
 
-/* Radar Animation */
+/* Radar Animation 2.0 */
 .radar-container {
   width: 250px;
   height: 250px;
   border-radius: 50%;
-  border: 2px solid var(--hud-color);
+  border: 2px solid var(--hud-glow);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 20px var(--hud-glow), inset 0 0 30px var(--hud-glow);
-  background: repeating-radial-gradient(transparent, transparent 20px, rgba(0,240,255,0.2) 21px);
+  box-shadow: 0 0 30px rgba(0,240,255,0.2), inset 0 0 40px rgba(0,240,255,0.2);
+  background: 
+    radial-gradient(transparent 40%, rgba(0,240,255,0.1) 41%, transparent 42%),
+    radial-gradient(transparent 70%, rgba(0,240,255,0.1) 71%, transparent 72%),
+    repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,240,255,0.03) 11px),
+    repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,240,255,0.03) 11px);
+  background-position: center;
+}
+
+/* Crosshair for Radar */
+.radar-container::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100%; height: 100%;
+  transform: translate(-50%, -50%);
+  background: 
+    linear-gradient(0deg, transparent 49.5%, var(--hud-glow) 50%, transparent 50.5%),
+    linear-gradient(90deg, transparent 49.5%, var(--hud-glow) 50%, transparent 50.5%);
+  pointer-events: none;
 }
 
 .radar-sweep {
   width: 50%;
   height: 50%;
-  background: linear-gradient(45deg, var(--hud-glow), transparent);
+  background: conic-gradient(from 0deg, transparent 70%, rgba(0,240,255,0.4) 100%);
   position: absolute;
   top: 0;
   left: 50%;
   transform-origin: bottom left;
   animation: sweep 4s linear infinite;
+  z-index: 2;
 }
 
 @keyframes sweep {
@@ -126,6 +197,7 @@ body {
   background-size: 100% 4px, 3px 100%;
   pointer-events: none;
   z-index: 9999;
+  opacity: 0.7;
 }
 
 /* Layout */
@@ -152,16 +224,16 @@ body {
 
 /* Environmental Effects */
 .env-floodlights {
-  background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, var(--bg-dark) 70%) !important;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, var(--bg-dark) 80%) !important;
 }
 
 .env-shields {
-  box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.3) !important;
-  animation: shield-pulse 2s infinite;
+  box-shadow: inset 0 0 80px rgba(0, 240, 255, 0.2) !important;
+  animation: shield-pulse 3s infinite alternate;
 }
 @keyframes shield-pulse {
-  0%, 100% { box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.2); }
-  50% { box-shadow: inset 0 0 80px rgba(0, 240, 255, 0.5); }
+  0% { box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.1); }
+  100% { box-shadow: inset 0 0 100px rgba(0, 240, 255, 0.3); }
 }
 
 .rec-indicator {
@@ -176,6 +248,7 @@ body {
   gap: 10px;
   z-index: 10000;
   text-shadow: 0 0 10px rgba(255, 42, 42, 0.8);
+  letter-spacing: 2px;
 }
 .rec-indicator.active {
   display: flex;
@@ -186,6 +259,7 @@ body {
   background-color: #ff2a2a;
   border-radius: 50%;
   animation: blink 1s infinite;
+  box-shadow: 0 0 10px #ff2a2a;
 }
 
 /* Terminal Input */
@@ -193,7 +267,7 @@ body {
   display: flex;
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid var(--hud-glow);
+  border-top: 1px solid rgba(255,255,255,0.1);
   align-items: center;
 }
 .terminal-input {
@@ -201,26 +275,28 @@ body {
   border: none;
   color: var(--hud-color);
   font-family: 'Share Tech Mono', monospace;
-  font-size: 1rem;
+  font-size: 1.1rem;
   flex: 1;
   outline: none;
   text-shadow: 0 0 5px var(--hud-glow);
 }
 .cmd-btn {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(0, 240, 255, 0.05);
   border: 1px solid var(--hud-color);
   color: var(--hud-color);
-  padding: 5px 10px;
+  padding: 6px 12px;
   cursor: pointer;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  margin-left: 5px;
+  font-size: 0.9rem;
+  border-radius: 2px;
+  margin-left: 8px;
   transition: all 0.2s;
+  box-shadow: 0 0 5px rgba(0,240,255,0.2);
 }
 .cmd-btn:hover {
   background: var(--hud-color);
   color: #000;
+  box-shadow: 0 0 15px var(--hud-glow);
 }
 
 /* Radar Game Anomalies */
@@ -230,17 +306,18 @@ body {
   height: 12px;
   background: var(--hud-alert);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--hud-alert);
+  box-shadow: 0 0 15px var(--hud-alert), 0 0 30px var(--hud-alert);
   cursor: crosshair;
   animation: blink 1s infinite;
   z-index: 10;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .anomaly.resolved {
   background: #00ff00;
-  box-shadow: 0 0 20px #00ff00;
-  transform: scale(1.5);
+  box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+  transform: scale(2);
   animation: none;
+  opacity: 0;
 }
 
 .dashboard-row {
@@ -271,11 +348,11 @@ body {
     width: 200px;
     height: 200px;
   }
-  .hw-panel {
+  .hw-panel, .sci-panel {
     padding: 20px !important;
   }
   body {
-    background-size: 15px 15px; /* Smaller grid on mobile */
+    background-size: 20px 20px; /* Smaller grid on mobile */
   }
   .dashboard-row {
     display: flex;
@@ -302,4 +379,21 @@ body {
     font-size: 1rem;
     border-radius: 2px;
   }
+}
+
+/* Animations */
+@keyframes blink { 
+  0%, 100% { opacity: 1; } 
+  50% { opacity: 0; } 
+}
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 1px) }
+  40% { transform: translate(-1px, -1px) }
+  60% { transform: translate(2px, 1px) }
+  80% { transform: translate(1px, -1px) }
+  100% { transform: translate(0) }
+}
+.glitch-hover:hover {
+  animation: glitch 0.2s linear infinite;
 }
