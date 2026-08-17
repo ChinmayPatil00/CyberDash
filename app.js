@@ -109,6 +109,98 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --- Voice AI (Web Speech API) ---
+  const btnVoice = document.getElementById('btn-voice');
+  if (btnVoice) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      btnVoice.addEventListener('click', () => {
+        playBeep('short');
+        btnVoice.classList.add('active');
+        const span = btnVoice.querySelector('span');
+        span.innerText = "LISTENING...";
+        recognition.start();
+      });
+
+      recognition.addEventListener('result', (e) => {
+        const transcript = e.results[0][0].transcript.toLowerCase();
+        console.log("Heard:", transcript);
+        btnVoice.classList.remove('active');
+        btnVoice.querySelector('span').innerText = "VOICE AI";
+        
+        let response = "Command not recognized.";
+        if (transcript.includes('shields')) {
+          document.body.classList.toggle('env-shields');
+          response = "Shields toggled.";
+        } else if (transcript.includes('lights')) {
+          document.body.classList.toggle('env-floodlights');
+          response = "Floodlights toggled.";
+        } else if (transcript.includes('status')) {
+          response = "All systems nominal. Core power optimal. Uplink stable.";
+        } else if (transcript.includes('where is the space station') || transcript.includes('iss')) {
+          response = "Tracking International Space Station on orbital scanner.";
+        }
+
+        const utterance = new SpeechSynthesisUtterance(response);
+        utterance.pitch = 0.8; // Robotic low pitch
+        utterance.rate = 1.2;
+        window.speechSynthesis.speak(utterance);
+      });
+
+      recognition.addEventListener('error', (e) => {
+        btnVoice.classList.remove('active');
+        btnVoice.querySelector('span').innerText = "VOICE AI";
+        playBeep('alert');
+      });
+      
+      recognition.addEventListener('end', () => {
+        btnVoice.classList.remove('active');
+        btnVoice.querySelector('span').innerText = "VOICE AI";
+      });
+    } else {
+      btnVoice.addEventListener('click', () => {
+        alert("Speech Recognition API not supported in this browser.");
+      });
+    }
+  }
+
+  // --- Live Webcam Feed (Night Vision) ---
+  const video = document.getElementById('webcam-video');
+  const canvas = document.getElementById('webcam-canvas');
+  if (video && canvas) {
+    const ctx = canvas.getContext('2d');
+    
+    // Request webcam access
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+      .then(stream => {
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(err => {
+        console.error("Webcam access denied:", err);
+      });
+
+    // Draw to canvas with green filter
+    function drawVideo() {
+      if (!video.paused && !video.ended) {
+        canvas.width = video.videoWidth || 300;
+        canvas.height = video.videoHeight || 150;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Apply green sci-fi tint
+        ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      requestAnimationFrame(drawVideo);
+    }
+    video.addEventListener('play', drawVideo);
+  }
+
   // Setup UI state for settings page toggles
   if (document.getElementById('btn-cyan')) {
     if (savedColor === 'red') {
@@ -132,51 +224,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Radar Mini-Game (Dashboard Page) ---
+  // --- Live ISS Tracker (Open-Notify API) ---
   const radarContainer = document.getElementById('radar-container');
-  if (radarContainer) {
-    let score = 0;
-    const scoreDisplay = document.getElementById('radar-score');
+  const issBlip = document.getElementById('iss-blip');
+  const issLoc = document.getElementById('iss-loc');
+  const issLatLon = document.getElementById('iss-latlon');
+  const issStatus = document.getElementById('iss-status');
+  
+  if (radarContainer && issBlip) {
+    function fetchISS() {
+      fetch('http://api.open-notify.org/iss-now.json')
+        .then(res => res.json())
+        .then(data => {
+          if (data.message === 'success') {
+            const lat = parseFloat(data.iss_position.latitude);
+            const lon = parseFloat(data.iss_position.longitude);
+            
+            // Map lat (-90 to 90) and lon (-180 to 180) to percentages (0-100%)
+            const topPos = 100 - ((lat + 90) / 180) * 100;
+            const leftPos = ((lon + 180) / 360) * 100;
+            
+            issBlip.style.display = 'block';
+            issBlip.style.top = `${topPos}%`;
+            issBlip.style.left = `${leftPos}%`;
+            
+            if (issLatLon) issLatLon.innerText = `LAT: ${lat.toFixed(2)} LON: ${lon.toFixed(2)}`;
+            if (issLoc) issLoc.innerText = "ISS ORBIT";
+            if (issStatus) issStatus.innerText = "TRACKING ACTIVE";
+            
+            // Random tiny beep on update
+            if (Math.random() > 0.5) playBeep('short');
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching ISS:", err);
+          if (issStatus) issStatus.innerText = "UPLINK FAILED";
+        });
+    }
     
-    // Spawn anomaly every 2.5 seconds
-    setInterval(() => {
-      // Create dot
-      const anomaly = document.createElement('div');
-      anomaly.classList.add('anomaly');
-      
-      // Random position roughly within the circle (20% to 80% to avoid edges)
-      const topPos = 20 + Math.random() * 60;
-      const leftPos = 20 + Math.random() * 60;
-      anomaly.style.top = `${topPos}%`;
-      anomaly.style.left = `${leftPos}%`;
-      
-      radarContainer.appendChild(anomaly);
-      playBeep('short'); // Soft beep on spawn
-      
-      // Handle Click (Resolve)
-      anomaly.addEventListener('click', function() {
-        if (!this.classList.contains('resolved')) {
-          this.classList.add('resolved');
-          playBeep('short');
-          
-          score += 10;
-          if (scoreDisplay) scoreDisplay.innerText = score;
-          
-          // Remove after visual confirmation
-          setTimeout(() => {
-            if (this.parentNode === radarContainer) radarContainer.removeChild(this);
-          }, 800);
-        }
-      });
-      
-      // Auto-remove if missed after 3 seconds
-      setTimeout(() => {
-        if (anomaly.parentNode === radarContainer && !anomaly.classList.contains('resolved')) {
-          radarContainer.removeChild(anomaly);
-        }
-      }, 3000);
-      
-    }, 2500);
+    fetchISS();
+    setInterval(fetchISS, 5000); // Update every 5 seconds
   }
 
   // --- Simulated Comms Log (Settings Page) ---
