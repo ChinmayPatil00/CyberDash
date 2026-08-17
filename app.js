@@ -13,15 +13,15 @@ function playBeep(type = 'short') {
   gainNode.connect(audioCtx.destination);
   
   if (type === 'short') {
-    // A quick, high-tech click
-    oscillator.type = 'square';
-    const baseFreq = 700 + Math.random() * 200; // Randomize pitch slightly between 700 and 900
+    // A modern, soft sci-fi holographic blip
+    oscillator.type = 'sine';
+    const baseFreq = 1200 + Math.random() * 100; 
     oscillator.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(baseFreq / 2, audioCtx.currentTime + 0.1);
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.05);
+    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
     oscillator.start(audioCtx.currentTime);
-    oscillator.stop(audioCtx.currentTime + 0.1);
+    oscillator.stop(audioCtx.currentTime + 0.05);
   } else if (type === 'alert') {
     // A low warning buzz
     oscillator.type = 'sawtooth';
@@ -308,16 +308,50 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Webcam access denied:", err);
       });
 
-    // Draw to canvas with green filter
+    // Render to ASCII Canvas
+    const asciiChars = "@%#*+=-:. ";
+    const offscreenCanvas = document.createElement('canvas');
+    const offCtx = offscreenCanvas.getContext('2d');
+    
     function drawVideo() {
       if (!video.paused && !video.ended) {
-        canvas.width = video.videoWidth || 300;
-        canvas.height = video.videoHeight || 150;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // We render the video to a very small offscreen canvas to get chunks of pixels
+        const w = 60;
+        const h = 30;
+        offscreenCanvas.width = w;
+        offscreenCanvas.height = h;
+        offCtx.drawImage(video, 0, 0, w, h);
         
-        // Apply green sci-fi tint
-        ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
+        const pixels = offCtx.getImageData(0, 0, w, h).data;
+        
+        // Setup main canvas
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        ctx.fillStyle = '#050810';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.font = "10px 'Share Tech Mono', monospace";
+        ctx.fillStyle = "#00ff00"; // Matrix Green
+        
+        const cellWidth = canvas.width / w;
+        const cellHeight = canvas.height / h;
+
+        for (let y = 0; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+            const r = pixels[i];
+            const g = pixels[i + 1];
+            const b = pixels[i + 2];
+            
+            // Calculate brightness
+            const brightness = (r + g + b) / 3;
+            // Map brightness to ascii character index
+            const charIndex = Math.floor((brightness / 255) * (asciiChars.length - 1));
+            const char = asciiChars[charIndex];
+            
+            ctx.fillText(char, x * cellWidth, y * cellHeight + cellHeight);
+          }
+        }
       }
       requestAnimationFrame(drawVideo);
     }
