@@ -109,64 +109,187 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- Voice AI (Web Speech API) ---
-  const btnVoice = document.getElementById('btn-voice');
-  if (btnVoice) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+  // --- Audio Visualizer (Oscilloscope) ---
+  const btnVis = document.getElementById('btn-visualizer');
+  const visCanvas = document.getElementById('visualizer-canvas');
+  let audioStream = null;
+  let analyser = null;
+  let visReq = null;
 
-      btnVoice.addEventListener('click', () => {
-        playBeep('short');
-        btnVoice.classList.add('active');
-        const span = btnVoice.querySelector('span');
-        span.innerText = "LISTENING...";
-        recognition.start();
-      });
+  if (btnVis && visCanvas) {
+    const vctx = visCanvas.getContext('2d');
+    
+    btnVis.addEventListener('click', () => {
+      // Toggle logic handled by generic button listener, we just check state
+      if (btnVis.classList.contains('active')) {
+        // Start Visualizer
+        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+          .then(stream => {
+            audioStream = stream;
+            const src = audioCtx.createMediaStreamSource(stream);
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            src.connect(analyser);
+            
+            visCanvas.style.opacity = '1';
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function draw() {
+              visCanvas.width = visCanvas.offsetWidth;
+              visCanvas.height = visCanvas.offsetHeight;
+              
+              visReq = requestAnimationFrame(draw);
+              analyser.getByteTimeDomainData(dataArray);
+              
+              vctx.clearRect(0, 0, visCanvas.width, visCanvas.height);
+              vctx.lineWidth = 2;
+              vctx.strokeStyle = '#00f0ff'; // Cyan line
+              vctx.shadowBlur = 10;
+              vctx.shadowColor = '#00f0ff';
+              vctx.beginPath();
+              
+              const sliceWidth = visCanvas.width * 1.0 / bufferLength;
+              let x = 0;
+              for(let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * visCanvas.height / 2;
+                if(i === 0) vctx.moveTo(x, y);
+                else vctx.lineTo(x, y);
+                x += sliceWidth;
+              }
+              vctx.lineTo(visCanvas.width, visCanvas.height / 2);
+              vctx.stroke();
+            }
+            draw();
+          })
+          .catch(err => {
+            console.error("Mic access denied", err);
+            btnVis.classList.remove('active');
+            alert("Microphone access is required for the visualizer.");
+          });
+      } else {
+        // Stop Visualizer
+        if (visReq) cancelAnimationFrame(visReq);
+        if (audioStream) audioStream.getTracks().forEach(t => t.stop());
+        visCanvas.style.opacity = '0';
+      }
+    });
+  }
 
-      recognition.addEventListener('result', (e) => {
-        const transcript = e.results[0][0].transcript.toLowerCase();
-        console.log("Heard:", transcript);
-        btnVoice.classList.remove('active');
-        btnVoice.querySelector('span').innerText = "VOICE AI";
-        
-        let response = "Command not recognized.";
-        if (transcript.includes('shields')) {
-          document.body.classList.toggle('env-shields');
-          response = "Shields toggled.";
-        } else if (transcript.includes('lights')) {
-          document.body.classList.toggle('env-floodlights');
-          response = "Floodlights toggled.";
-        } else if (transcript.includes('status')) {
-          response = "All systems nominal. Core power optimal. Uplink stable.";
-        } else if (transcript.includes('where is the space station') || transcript.includes('iss')) {
-          response = "Tracking International Space Station on orbital scanner.";
-        }
+  // --- Breach Protocol (Neural Network) ---
+  const nnCanvas = document.getElementById('neural-canvas');
+  const nodeStatus = document.getElementById('node-status');
+  if (nnCanvas) {
+    const nctx = nnCanvas.getContext('2d');
+    let width, height;
+    
+    function resizeNN() {
+      width = nnCanvas.width = nnCanvas.offsetWidth;
+      height = nnCanvas.height = nnCanvas.offsetHeight;
+    }
+    window.addEventListener('resize', resizeNN);
+    resizeNN();
 
-        const utterance = new SpeechSynthesisUtterance(response);
-        utterance.pitch = 0.8; // Robotic low pitch
-        utterance.rate = 1.2;
-        window.speechSynthesis.speak(utterance);
-      });
-
-      recognition.addEventListener('error', (e) => {
-        btnVoice.classList.remove('active');
-        btnVoice.querySelector('span').innerText = "VOICE AI";
-        playBeep('alert');
-      });
-      
-      recognition.addEventListener('end', () => {
-        btnVoice.classList.remove('active');
-        btnVoice.querySelector('span').innerText = "VOICE AI";
-      });
-    } else {
-      btnVoice.addEventListener('click', () => {
-        alert("Speech Recognition API not supported in this browser.");
+    const nodes = [];
+    const numNodes = 40;
+    for(let i=0; i<numNodes; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+        radius: Math.random() * 2 + 1
       });
     }
+
+    let mouse = { x: null, y: null, active: false, target: null };
+    nnCanvas.addEventListener('mousedown', (e) => {
+      const rect = nnCanvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.active = true;
+      
+      // Find closest node to grab
+      let closest = null;
+      let minDist = 30; // Grab radius
+      nodes.forEach(n => {
+        const dx = n.x - mouse.x;
+        const dy = n.y - mouse.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < minDist) { minDist = dist; closest = n; }
+      });
+      mouse.target = closest;
+    });
+    
+    nnCanvas.addEventListener('mousemove', (e) => {
+      if (!mouse.active) return;
+      const rect = nnCanvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      if (mouse.target) {
+        mouse.target.x = mouse.x;
+        mouse.target.y = mouse.y;
+        mouse.target.vx = 0;
+        mouse.target.vy = 0;
+      }
+    });
+    
+    window.addEventListener('mouseup', () => {
+      if(mouse.target) {
+        // Add some throw velocity
+        mouse.target.vx = (Math.random() - 0.5) * 5;
+        mouse.target.vy = (Math.random() - 0.5) * 5;
+      }
+      mouse.active = false;
+      mouse.target = null;
+    });
+
+    function drawNN() {
+      nctx.clearRect(0, 0, width, height);
+      let connections = 0;
+      
+      // Update and draw nodes
+      nodes.forEach(n => {
+        if (mouse.target !== n) {
+          n.x += n.vx;
+          n.y += n.vy;
+          // Bounce off walls
+          if(n.x < 0 || n.x > width) n.vx *= -1;
+          if(n.y < 0 || n.y > height) n.vy *= -1;
+        }
+        
+        nctx.beginPath();
+        nctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        nctx.fillStyle = '#ff2a2a'; // Alert red nodes
+        nctx.shadowBlur = 5;
+        nctx.shadowColor = '#ff2a2a';
+        nctx.fill();
+      });
+      
+      // Draw lines
+      for(let i=0; i<nodes.length; i++) {
+        for(let j=i+1; j<nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          
+          if(dist < 100) {
+            connections++;
+            nctx.beginPath();
+            nctx.moveTo(nodes[i].x, nodes[i].y);
+            nctx.lineTo(nodes[j].x, nodes[j].y);
+            nctx.strokeStyle = `rgba(255, 42, 42, ${1 - dist/100})`;
+            nctx.lineWidth = 1.5;
+            nctx.stroke();
+          }
+        }
+      }
+      
+      if(nodeStatus) nodeStatus.innerText = `NODES CONNECTED: ${connections}`;
+      requestAnimationFrame(drawNN);
+    }
+    drawNN();
   }
 
   // --- Live Webcam Feed (Night Vision) ---
