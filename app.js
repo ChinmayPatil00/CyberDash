@@ -109,253 +109,210 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- Audio Visualizer (Oscilloscope) ---
-  const btnVis = document.getElementById('btn-visualizer');
-  const visCanvas = document.getElementById('visualizer-canvas');
-  let audioStream = null;
-  let analyser = null;
-  let visReq = null;
-
-  if (btnVis && visCanvas) {
-    const vctx = visCanvas.getContext('2d');
-    
-    btnVis.addEventListener('click', () => {
-      // Toggle logic handled by generic button listener, we just check state
-      if (btnVis.classList.contains('active')) {
-        // Start Visualizer
-        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-          .then(stream => {
-            audioStream = stream;
-            const src = audioCtx.createMediaStreamSource(stream);
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 256;
-            src.connect(analyser);
-            
-            visCanvas.style.opacity = '1';
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            
-            function draw() {
-              visCanvas.width = visCanvas.offsetWidth;
-              visCanvas.height = visCanvas.offsetHeight;
-              
-              visReq = requestAnimationFrame(draw);
-              analyser.getByteTimeDomainData(dataArray);
-              
-              vctx.clearRect(0, 0, visCanvas.width, visCanvas.height);
-              vctx.lineWidth = 2;
-              vctx.strokeStyle = '#00f0ff'; // Cyan line
-              vctx.shadowBlur = 10;
-              vctx.shadowColor = '#00f0ff';
-              vctx.beginPath();
-              
-              const sliceWidth = visCanvas.width * 1.0 / bufferLength;
-              let x = 0;
-              for(let i = 0; i < bufferLength; i++) {
-                const v = dataArray[i] / 128.0;
-                const y = v * visCanvas.height / 2;
-                if(i === 0) vctx.moveTo(x, y);
-                else vctx.lineTo(x, y);
-                x += sliceWidth;
-              }
-              vctx.lineTo(visCanvas.width, visCanvas.height / 2);
-              vctx.stroke();
-            }
-            draw();
-          })
-          .catch(err => {
-            console.error("Mic access denied", err);
-            btnVis.classList.remove('active');
-            alert("Microphone access is required for the visualizer.");
-          });
+  // --- Ambient White Noise Generator ---
+  let noiseNode = null;
+  const btnWhiteNoise = document.getElementById('btn-whitenoise');
+  
+  if (btnWhiteNoise) {
+    btnWhiteNoise.addEventListener('click', () => {
+      if (btnWhiteNoise.classList.contains('active')) {
+        // Stop noise
+        if (noiseNode) {
+          noiseNode.stop();
+          noiseNode.disconnect();
+          noiseNode = null;
+        }
+        btnWhiteNoise.classList.remove('active');
       } else {
-        // Stop Visualizer
-        if (visReq) cancelAnimationFrame(visReq);
-        if (audioStream) audioStream.getTracks().forEach(t => t.stop());
-        visCanvas.style.opacity = '0';
+        // Play noise
+        btnWhiteNoise.classList.add('active');
+        const bufferSize = audioCtx.sampleRate * 2; // 2 seconds of noise
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        
+        noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = buffer;
+        noiseNode.loop = true;
+        
+        // Filter the noise to sound like a spaceship hum (lowpass)
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 400;
+        
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.value = 0.2; // Keep it quiet
+        
+        noiseNode.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        
+        noiseNode.start();
       }
     });
   }
 
-  // --- Breach Protocol (Neural Network) ---
-  const nnCanvas = document.getElementById('neural-canvas');
-  const nodeStatus = document.getElementById('node-status');
-  if (nnCanvas) {
-    const nctx = nnCanvas.getContext('2d');
-    let width, height;
+  // --- Pomodoro Focus Timer ---
+  const btnTimerStart = document.getElementById('btn-timer-start');
+  const btnTimerReset = document.getElementById('btn-timer-reset');
+  const timerText = document.getElementById('timer-text');
+  const timerRing = document.getElementById('timer-ring');
+  const timerStatus = document.getElementById('timer-status');
+  
+  let timerInterval = null;
+  let timeLeft = 25 * 60; // 25 minutes in seconds
+  const totalTime = 25 * 60;
+  
+  function updateTimerUI() {
+    if (!timerText) return;
+    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+    const s = (timeLeft % 60).toString().padStart(2, '0');
+    timerText.innerText = `${m}:${s}`;
     
-    function resizeNN() {
-      width = nnCanvas.width = nnCanvas.offsetWidth;
-      height = nnCanvas.height = nnCanvas.offsetHeight;
+    // Update SVG Ring (circumference is ~565.48)
+    if (timerRing) {
+      const offset = 565.48 - (timeLeft / totalTime) * 565.48;
+      timerRing.style.strokeDashoffset = offset;
     }
-    window.addEventListener('resize', resizeNN);
-    resizeNN();
-
-    const nodes = [];
-    const numNodes = 40;
-    for(let i=0; i<numNodes; i++) {
-      nodes.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        radius: Math.random() * 2 + 1
-      });
-    }
-
-    let mouse = { x: null, y: null, active: false, target: null };
-    nnCanvas.addEventListener('mousedown', (e) => {
-      const rect = nnCanvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-      mouse.active = true;
-      
-      // Find closest node to grab
-      let closest = null;
-      let minDist = 30; // Grab radius
-      nodes.forEach(n => {
-        const dx = n.x - mouse.x;
-        const dy = n.y - mouse.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if(dist < minDist) { minDist = dist; closest = n; }
-      });
-      mouse.target = closest;
-    });
-    
-    nnCanvas.addEventListener('mousemove', (e) => {
-      if (!mouse.active) return;
-      const rect = nnCanvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-      if (mouse.target) {
-        mouse.target.x = mouse.x;
-        mouse.target.y = mouse.y;
-        mouse.target.vx = 0;
-        mouse.target.vy = 0;
-      }
-    });
-    
-    window.addEventListener('mouseup', () => {
-      if(mouse.target) {
-        // Add some throw velocity
-        mouse.target.vx = (Math.random() - 0.5) * 5;
-        mouse.target.vy = (Math.random() - 0.5) * 5;
-      }
-      mouse.active = false;
-      mouse.target = null;
-    });
-
-    function drawNN() {
-      nctx.clearRect(0, 0, width, height);
-      let connections = 0;
-      
-      // Update and draw nodes
-      nodes.forEach(n => {
-        if (mouse.target !== n) {
-          n.x += n.vx;
-          n.y += n.vy;
-          // Bounce off walls
-          if(n.x < 0 || n.x > width) n.vx *= -1;
-          if(n.y < 0 || n.y > height) n.vy *= -1;
-        }
-        
-        nctx.beginPath();
-        nctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        nctx.fillStyle = '#ff2a2a'; // Alert red nodes
-        nctx.shadowBlur = 5;
-        nctx.shadowColor = '#ff2a2a';
-        nctx.fill();
-      });
-      
-      // Draw lines
-      for(let i=0; i<nodes.length; i++) {
-        for(let j=i+1; j<nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          
-          if(dist < 100) {
-            connections++;
-            nctx.beginPath();
-            nctx.moveTo(nodes[i].x, nodes[i].y);
-            nctx.lineTo(nodes[j].x, nodes[j].y);
-            nctx.strokeStyle = `rgba(255, 42, 42, ${1 - dist/100})`;
-            nctx.lineWidth = 1.5;
-            nctx.stroke();
-          }
-        }
-      }
-      
-      if(nodeStatus) nodeStatus.innerText = `NODES CONNECTED: ${connections}`;
-      requestAnimationFrame(drawNN);
-    }
-    drawNN();
   }
 
-  // --- Live Webcam Feed (Night Vision) ---
-  const video = document.getElementById('webcam-video');
-  const canvas = document.getElementById('webcam-canvas');
-  if (video && canvas) {
-    const ctx = canvas.getContext('2d');
-    
-    // Request webcam access
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-      .then(stream => {
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch(err => {
-        console.error("Webcam access denied:", err);
-      });
-
-    // Render to ASCII Canvas
-    const asciiChars = "@%#*+=-:. ";
-    const offscreenCanvas = document.createElement('canvas');
-    const offCtx = offscreenCanvas.getContext('2d');
-    
-    function drawVideo() {
-      if (!video.paused && !video.ended) {
-        // We render the video to a very small offscreen canvas to get chunks of pixels
-        const w = 60;
-        const h = 30;
-        offscreenCanvas.width = w;
-        offscreenCanvas.height = h;
-        offCtx.drawImage(video, 0, 0, w, h);
+  function startTimer() {
+    if (timerInterval) {
+      // Pause
+      clearInterval(timerInterval);
+      timerInterval = null;
+      btnTimerStart.innerHTML = '<i class="fas fa-play"></i> RESUME';
+      if (timerStatus) timerStatus.innerText = "PAUSED";
+      playBeep('short');
+    } else {
+      // Start
+      btnTimerStart.innerHTML = '<i class="fas fa-pause"></i> PAUSE';
+      if (timerStatus) timerStatus.innerText = "IN PROGRESS";
+      playBeep('short');
+      
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerUI();
         
-        const pixels = offCtx.getImageData(0, 0, w, h).data;
-        
-        // Setup main canvas
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        ctx.fillStyle = '#050810';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.font = "10px 'Share Tech Mono', monospace";
-        ctx.fillStyle = "#00ff00"; // Matrix Green
-        
-        const cellWidth = canvas.width / w;
-        const cellHeight = canvas.height / h;
-
-        for (let y = 0; y < h; y++) {
-          for (let x = 0; x < w; x++) {
-            const i = (y * w + x) * 4;
-            const r = pixels[i];
-            const g = pixels[i + 1];
-            const b = pixels[i + 2];
-            
-            // Calculate brightness
-            const brightness = (r + g + b) / 3;
-            // Map brightness to ascii character index
-            const charIndex = Math.floor((brightness / 255) * (asciiChars.length - 1));
-            const char = asciiChars[charIndex];
-            
-            ctx.fillText(char, x * cellWidth, y * cellHeight + cellHeight);
-          }
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          btnTimerStart.innerHTML = '<i class="fas fa-play"></i> START';
+          if (timerStatus) timerStatus.innerText = "COMPLETED";
+          playBeep('alert');
+          setTimeout(() => playBeep('alert'), 500);
+          timeLeft = totalTime;
         }
-      }
-      requestAnimationFrame(drawVideo);
+      }, 1000);
     }
-    video.addEventListener('play', drawVideo);
+  }
+
+  if (btnTimerStart) {
+    btnTimerStart.addEventListener('click', startTimer);
+    updateTimerUI();
+  }
+  
+  if (btnTimerReset) {
+    btnTimerReset.addEventListener('click', () => {
+      playBeep('short');
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      timeLeft = totalTime;
+      btnTimerStart.innerHTML = '<i class="fas fa-play"></i> START';
+      if (timerStatus) timerStatus.innerText = "STANDBY";
+      updateTimerUI();
+    });
+  }
+
+  // --- Mission Objectives (Kanban Board) ---
+  const taskInput = document.getElementById('task-input');
+  const btnAddTask = document.getElementById('btn-add-task');
+  const columns = document.querySelectorAll('.kanban-dropzone');
+  
+  // Load tasks from localStorage
+  let tasks = JSON.parse(localStorage.getItem('cyberdash_tasks')) || [];
+  
+  function saveTasks() {
+    localStorage.setItem('cyberdash_tasks', JSON.stringify(tasks));
+  }
+  
+  function renderTasks() {
+    columns.forEach(col => col.innerHTML = '');
+    
+    tasks.forEach(task => {
+      const taskEl = document.createElement('div');
+      taskEl.className = 'kanban-task';
+      taskEl.draggable = true;
+      taskEl.dataset.id = task.id;
+      taskEl.innerText = task.text;
+      
+      const delBtn = document.createElement('i');
+      delBtn.className = 'fas fa-times delete-btn';
+      delBtn.addEventListener('click', () => {
+        tasks = tasks.filter(t => t.id !== task.id);
+        saveTasks();
+        renderTasks();
+      });
+      taskEl.appendChild(delBtn);
+      
+      // Drag events
+      taskEl.addEventListener('dragstart', (e) => {
+        taskEl.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', task.id);
+      });
+      taskEl.addEventListener('dragend', () => {
+        taskEl.classList.remove('dragging');
+      });
+      
+      // Append to correct column
+      const targetCol = document.querySelector(`.kanban-col[data-status="${task.status}"] .kanban-dropzone`);
+      if (targetCol) targetCol.appendChild(taskEl);
+    });
+  }
+  
+  if (btnAddTask && taskInput) {
+    btnAddTask.addEventListener('click', () => {
+      const text = taskInput.value.trim();
+      if (text) {
+        tasks.push({ id: Date.now().toString(), text, status: 'pending' });
+        saveTasks();
+        renderTasks();
+        taskInput.value = '';
+        playBeep('short');
+      }
+    });
+    
+    taskInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') btnAddTask.click();
+    });
+    
+    // Setup Dropzones
+    document.querySelectorAll('.kanban-col').forEach(col => {
+      col.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        col.style.background = 'rgba(255,255,255,0.1)';
+      });
+      col.addEventListener('dragleave', () => {
+        col.style.background = 'rgba(0,0,0,0.3)';
+      });
+      col.addEventListener('drop', (e) => {
+        e.preventDefault();
+        col.style.background = 'rgba(0,0,0,0.3)';
+        const id = e.dataTransfer.getData('text/plain');
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+          task.status = col.dataset.status;
+          saveTasks();
+          renderTasks();
+          playBeep('short');
+        }
+      });
+    });
+    
+    // Initial Render
+    renderTasks();
   }
 
   // Setup UI state for settings page toggles

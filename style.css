@@ -400,3 +400,33 @@ body {
 .glitch-hover:hover {
   animation: glitch 0.2s linear infinite;
 }
+
+/* Kanban Tasks */
+.kanban-task {
+  background: var(--bg-dark);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px;
+  cursor: grab;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.kanban-task:active {
+  cursor: grabbing;
+}
+.kanban-task.dragging {
+  opacity: 0.5;
+}
+.kanban-task .delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: var(--hud-alert);
+  cursor: pointer;
+  display: none;
+}
+.kanban-task:hover .delete-btn {
+  display: block;
+}
