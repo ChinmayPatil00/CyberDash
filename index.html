@@ -3,50 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Boot</title>
-  <link rel="stylesheet" href="style.css?v=2.0">
-  
-  <!-- Vercel Web Analytics -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  
-  <!-- Vercel Speed Insights -->
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <title>Mission Control Authentication</title>
+  <link rel="stylesheet" href="style.css?v=3.0">
+  <style>
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: var(--bg-color);
+    }
+    .auth-box {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .auth-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--text-main);
+      letter-spacing: 2px;
+    }
+    .auth-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .auth-input {
+      width: 100%;
+      background: var(--bg-color);
+      border: 1px solid var(--panel-border);
+      color: var(--text-main);
+      padding: 12px;
+      margin-bottom: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      text-align: center;
+    }
+    .auth-input:focus {
+      border-color: var(--accent-color);
+    }
+    .auth-btn {
+      width: 100%;
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 12px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.2s;
+    }
+    .auth-btn:hover {
+      background: var(--accent-hover);
+    }
+    .auth-footer {
+      margin-top: 30px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
 </head>
 <body>
-  <div class="scanlines"></div>
-  
-  <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 60px 20px; flex-direction: column; gap: 40px;">
-    
-    <div class="sci-panel" style="padding: 50px; text-align: center; max-width: 600px;">
-      <h3 style="color: var(--text-muted); margin-bottom: 20px;">[ ENCRYPTED CHANNEL SECURED ]</h3>
-      <h1 class="text-glow" style="font-size: 3rem; margin-bottom: 20px;">CYBERDASH LINK</h1>
-      <p style="font-size: 1.2rem; line-height: 1.5;">Establishing remote uplink to CyberDash Core. Awaiting operator confirmation to deploy telemetry interfaces.</p>
-    </div>
-    
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-      <button id="btn-manual" class="hw-button" style="font-size: 1.2rem;">CLASSIFIED MANUAL</button>
-      <a href="dashboard.html" class="hw-button glitch-hover" style="font-size: 1.2rem; border: 1px solid var(--hud-color);">INITIATE LINK</a>
-    </div>
 
-    <!-- Hidden Manual Panel -->
-    <!-- Hidden Manual Panel -->
-    <div id="manual-panel" class="sci-panel" style="display: none; padding: 40px; text-align: left; max-width: 800px; margin-top: 20px;">
-      <h2 class="text-glow" style="margin-bottom: 20px; text-align: center;">CYBERDASH FEATURE MANUAL</h2>
-      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem; text-align: center;">Welcome to the CyberDash Terminal simulator. Here is what you can do:</p>
-      <ul style="list-style-type: none; line-height: 1.8; color: var(--text-main); font-size: 1.1rem; display: flex; flex-direction: column; gap: 15px;">
-        <li><strong style="color: var(--hud-color);">[1] ANOMALY DETECTION GAME:</strong> On the Telemetry Dashboard, watch the Surface Scanner. Blinking red dots (anomalies) will spawn randomly. Click them quickly to resolve them and collect data points!</li>
-        <li><strong style="color: var(--hud-color);">[2] ENVIRONMENTAL CONTROLS:</strong> Use the 4 manual override buttons on the dashboard to physically change your environment. Turn on the Floodlights to illuminate the background, or activate Shields to wrap the screen in a glowing blue forcefield.</li>
-        <li><strong style="color: var(--hud-color);">[3] INTERACTIVE COMMAND TERMINAL:</strong> Navigate to the Comms Log to access a real typing terminal. Try typing commands like <code>/status</code>, <code>/ping</code>, or <code>/override</code> and hit Enter to receive simulated telemetry responses.</li>
-        <li><strong style="color: var(--hud-color);">[4] HUD COLOR OVERRIDE:</strong> In the Comms Log, you can switch the entire interface theme from standard Cyan to Alert Red. This preference saves to your browser automatically.</li>
-        <li><strong style="color: var(--hud-color);">[5] REACTIVE AUDIO:</strong> Turn up your volume! Every button you press generates authentic, synthesized sci-fi sounds (beeps, clicks, and sirens) in real-time.</li>
-      </ul>
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-title">JPL MISSION CONTROL</div>
+      <div class="auth-subtitle">Perseverance Surface Operations</div>
+      
+      <input type="password" class="auth-input" placeholder="ENTER OPERATOR ID" value="ADMIN-77X">
+      
+      <a href="dashboard.html" style="text-decoration: none;">
+        <button class="auth-btn">Authenticate & Uplink</button>
+      </a>
+
+      <div class="auth-footer">
+        UNAUTHORIZED ACCESS STRICTLY PROHIBITED<br>
+        SECURE UPLINK: ENABLED
+      </div>
     </div>
-  <script src="app.js"></script>
+  </div>
+
 </body>
 </html>
