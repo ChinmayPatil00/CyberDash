@@ -79,37 +79,82 @@
           <span class="data-value">42.1°C</span>
         </div>
       </div>
+
+      <div class="data-group">
+        <div class="panel-header" style="border:none; margin-bottom:5px;">Environment (REMS)</div>
+        <div class="data-row">
+          <span class="data-label">EXT_TEMP</span>
+          <span class="data-value" id="env-temp">-63.2°C</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">PRESSURE</span>
+          <span class="data-value" id="env-pressure">741 Pa</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">WIND_SPD</span>
+          <span class="data-value" id="env-wind">14.2 m/s</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">RADIATION</span>
+          <span class="data-value alert" id="env-rad" style="color:var(--alert-color);">HIGH</span>
+        </div>
+      </div>
     </aside>
 
-    <!-- Center Panel: Surface Feed -->
-    <main class="panel">
+    <!-- Center Panel: Surface Feed & Topography -->
+    <main class="panel" style="display:flex; flex-direction:column; gap:10px;">
       <div class="panel-header" style="display:flex; justify-content:space-between;">
         <span>Latest Surface Capture (NASA API)</span>
         <button id="btn-refresh-cam" class="btn" style="padding: 2px 8px; font-size: 0.7rem;"><i class="fas fa-sync"></i> REFRESH</button>
       </div>
       
-      <div class="image-container" id="rover-img-container">
+      <div class="image-container" id="rover-img-container" style="flex: 1.5; min-height: 250px;">
         <!-- Will be populated by JS -->
         <span style="color:var(--text-muted); font-family:monospace;">INITIALIZING NASA UPLINK...</span>
       </div>
       
-      <div style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--text-muted);">
-        <strong>WARNING:</strong> Surface feed subject to deep space transmission latency.
+      <div class="panel-header" style="margin-top:10px;">Topographical Radar Map</div>
+      <div style="flex: 1; border: 1px solid var(--panel-border); background:#0a0a0a; position: relative;">
+        <canvas id="radar-map" style="width:100%; height:100%; display:block;"></canvas>
+      </div>
+
+      <div style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--text-muted); margin-top:5px;">
+        <strong>WARNING:</strong> Surface feed and telemetry subject to deep space transmission latency.
       </div>
     </main>
 
-    <!-- Right Panel: Command Queue -->
-    <aside class="panel">
+    <!-- Right Panel: Command Queue & Diagnostics -->
+    <aside class="panel" style="display:flex; flex-direction:column;">
       <div class="panel-header">Command Uplink Queue</div>
       
       <div class="command-input-container">
-        <input type="text" id="cmd-input" placeholder="Enter command sequence..." autocomplete="off">
+        <input type="text" id="cmd-input" placeholder="e.g. DRIVE_FWD, DEPLOY_ARM..." autocomplete="off">
         <button id="btn-send-cmd" class="btn btn-primary">TX</button>
       </div>
       
-      <ul class="command-log" id="cmd-log">
+      <ul class="command-log" id="cmd-log" style="flex: 1; margin-bottom: 20px;">
         <!-- Logs go here -->
       </ul>
+
+      <div class="panel-header">Subsystem Diagnostics</div>
+      <div class="data-group" style="margin-bottom:0;">
+        <div class="data-row">
+          <span class="data-label">HIGH_GAIN_ANTENNA</span>
+          <span class="data-value nominal" id="sys-hga">LOCKED</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">ROBOTIC_ARM</span>
+          <span class="data-value" id="sys-arm">STOWED</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">DRILL_ASSEMBLY</span>
+          <span class="data-value" id="sys-drill">SECURED</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">AUDIO_TELEMETRY</span>
+          <span class="data-value nominal" id="sys-audio" style="cursor:pointer;" onclick="toggleAudio()">ACTIVE [CLICK TO MUTE]</span>
+        </div>
+      </div>
       
     </aside>
 
