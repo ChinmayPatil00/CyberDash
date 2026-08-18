@@ -1,4 +1,4 @@
-// WanderPlan - Advanced Core Logic
+// WanderPlan v3 - Advanced Economic & Itinerary Engine
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
         days: parseInt(document.getElementById('input-days').value, 10),
         travelers: parseInt(document.getElementById('input-travelers').value, 10),
         style: document.getElementById('input-style').value,
-        currency: document.getElementById('input-currency').value
+        currency: document.getElementById('input-currency').value,
+        medium: document.getElementById('input-medium').value,
+        purpose: document.getElementById('input-purpose').value
       };
       
       localStorage.setItem('wanderplan_data', JSON.stringify(planData));
@@ -43,42 +45,50 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('display-travelers').innerText = plan.travelers;
     document.getElementById('display-style').innerText = plan.style;
     document.getElementById('display-currency').innerText = plan.currency;
+    document.getElementById('display-medium').innerText = plan.medium;
+    document.getElementById('display-purpose').innerText = plan.purpose;
 
     if (heroBanner) {
-      // Dynamic Unsplash/LoremFlickr image based on destination
       const query = encodeURIComponent(plan.dest);
       heroBanner.style.backgroundImage = `url('https://loremflickr.com/1600/900/${query},landscape/all')`;
     }
 
-    // 2. Generate Budget with Currency Conversion
-    const exchangeRates = {
-      'USD': 1.0,
-      'EUR': 0.92,
-      'GBP': 0.79,
-      'INR': 83.1,
-      'JPY': 149.5
-    };
+    // 2. Advanced Economic Engine
+    const exchangeRates = { 'USD': 1.0, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.1, 'JPY': 149.5 };
     const rate = exchangeRates[plan.currency] || 1.0;
 
-    const baseCostPerDayUSD = {
-      'budget': 60,
-      'standard': 150,
-      'luxury': 450
-    }[plan.style];
+    // Determine regional cost multiplier based on destination keyword
+    const destLower = plan.dest.toLowerCase();
+    let regionalMultiplier = 1.0; // Global average
+    
+    const expensiveRegions = ['us', 'usa', 'america', 'uk', 'london', 'paris', 'france', 'swiss', 'switzerland', 'japan', 'tokyo', 'dubai', 'singapore', 'australia', 'sydney'];
+    const cheapRegions = ['india', 'vietnam', 'thailand', 'indonesia', 'bali', 'philippines', 'mexico', 'colombia', 'peru', 'cambodia', 'nepal'];
 
-    // Estimates in USD, then converted
-    const flights = ((300 + (Math.random() * 400)) * plan.travelers) * rate; 
-    const accommodation = ((baseCostPerDayUSD * 0.45) * plan.days * plan.travelers) * rate;
-    const food = ((baseCostPerDayUSD * 0.30) * plan.days * plan.travelers) * rate;
-    const localTransport = ((baseCostPerDayUSD * 0.10) * plan.days * plan.travelers) * rate;
-    const misc = ((baseCostPerDayUSD * 0.15) * plan.days * plan.travelers) * rate; 
+    if (expensiveRegions.some(r => destLower.includes(r))) {
+      regionalMultiplier = 1.8;
+    } else if (cheapRegions.some(r => destLower.includes(r))) {
+      regionalMultiplier = 0.4;
+    }
+
+    const styleMultiplierUSD = { 'budget': 50, 'standard': 140, 'luxury': 400 }[plan.style];
+    const baseDailyCostUSD = styleMultiplierUSD * regionalMultiplier;
+
+    // Transit Base Costs
+    const transitBaseCostUSD = { 'airplane': 350, 'train': 120, 'bus': 50, 'car': 80 }[plan.medium];
+
+    // Final Estimates in Chosen Currency
+    const transitCost = ((transitBaseCostUSD + (Math.random() * 50)) * plan.travelers) * rate; 
+    const accommodation = ((baseDailyCostUSD * 0.45) * plan.days * plan.travelers) * rate;
+    const food = ((baseDailyCostUSD * 0.30) * plan.days * plan.travelers) * rate;
+    const localTransport = ((baseDailyCostUSD * 0.10) * plan.days * plan.travelers) * rate;
+    const misc = ((baseDailyCostUSD * 0.15) * plan.days * plan.travelers) * rate; 
 
     const expenses = [
-      { label: 'Roundtrip Flights / Transit', amount: flights },
+      { label: `Main Transit (${plan.medium.charAt(0).toUpperCase() + plan.medium.slice(1)})`, amount: transitCost },
       { label: 'Accommodation', amount: accommodation },
       { label: 'Food & Dining', amount: food },
-      { label: 'Local Transport (Taxis, Trains, Metro)', amount: localTransport },
-      { label: 'Micro-Expenses (Coffee, Snacks, Tips, Entry Fees)', amount: misc }
+      { label: 'Local Transport (Taxis, Metros)', amount: localTransport },
+      { label: 'Micro-Expenses (Coffee, Entry Fees)', amount: misc }
     ];
 
     const formatter = new Intl.NumberFormat('en-US', {
@@ -102,27 +112,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('budget-total').innerText = formatter.format(total);
 
-    // 3. Generate Detailed Itinerary
-    const midActivities = [
-      "Embark on a comprehensive guided walking tour. Utilize the local metro system or a scenic tram to navigate between key historical districts. Stop at a local cafe for a highly-rated regional lunch.",
-      "Nature exploration day! Take a regional train or chartered bus out of the city center. Spend the afternoon trekking local trails and immersing yourself in the landscape.",
-      "Cultural deep dive. Hail a registered taxi or rideshare to visit renowned museums and cultural heritage sites. Enjoy a curated fine-dining experience in the evening.",
-      "Free day for leisure. Use public bicycles or walk to explore hidden alleyways, boutique shopping districts, and local markets at your own pace.",
-      "Adventure excursion! You'll be picked up via a local shuttle. Engage in outdoor excursions like kayaking, climbing, or wildlife spotting, depending on the local geography.",
-      "Culinary immersion. Navigate via the subway to a bustling local food market. Spend the day tasting authentic street food, followed by an evening cooking class."
-    ];
+    // 3. Purpose-Driven Itinerary Engine
+    const activities = {
+      'sightseeing': [
+        "Purchase a daily pass for the local metro system. Visit the central plaza and iconic landmarks. Enjoy lunch at a highly-rated rooftop cafe.",
+        "Take a hop-on-hop-off sightseeing bus to cover major districts. Walk through the bustling downtown area and explore boutique shops.",
+        "Hire a registered taxi or rideshare to visit panoramic viewpoints. Spend the evening enjoying a local theatre or entertainment show."
+      ],
+      'heritage': [
+        "Take a local train to the old-town district. Join a guided historical walking tour to learn about the region's ancient architecture and cultural roots.",
+        "Use the public transit network to visit renowned national museums and heritage monuments. Dine at a historic tavern established centuries ago.",
+        "Book a shuttle to a nearby UNESCO World Heritage site outside the city. Spend the day immersing yourself in local traditions and artisan crafts."
+      ],
+      'trekking': [
+        "Catch an early morning regional bus towards the national park or nature reserve. Begin a moderate acclimatization hike along well-marked nature trails.",
+        "Full day guided trekking expedition. Navigate challenging terrain to reach panoramic viewpoints or waterfalls. Pack a trail lunch to eat in nature.",
+        "Rent bicycles or join an outdoor adventure group. Spend the day exploring rugged coastlines, forests, or valleys, ending with a campfire dinner."
+      ],
+      'culinary': [
+        "Navigate via subway to the city's largest farmers market. Taste authentic street food, interact with local vendors, and sample regional delicacies.",
+        "Take a short taxi ride to a specialized cooking class. Learn how to prepare traditional dishes using local ingredients, followed by a feast.",
+        "Embark on an evening food and wine pairing tour. Walk between hidden local bistros, sampling curated menus and regional beverages."
+      ]
+    };
 
+    const transitStrings = {
+      'airplane': `Board your flight from ${plan.origin}. Upon landing at the international terminal in ${plan.dest}, proceed through customs. Take the express airport train or a pre-booked shuttle to the city center.`,
+      'train': `Depart from the central railway station in ${plan.origin}. Enjoy the scenic overland rail journey. Arrive at the main terminus in ${plan.dest} and catch a local subway to your accommodation.`,
+      'bus': `Board the long-distance coach from ${plan.origin}. Enjoy the highway views during the transit. Arrive at the central bus depot in ${plan.dest} and hail a local taxi to your stay.`,
+      'car': `Pack your vehicle and begin the road trip from ${plan.origin}. Navigate the highways, taking scenic rest stops along the way. Arrive in ${plan.dest}, secure parking, and check into your accommodation.`
+    };
+
+    const departStrings = {
+      'airplane': `Check out and arrange a taxi or airport express train to the terminal. Proceed through security and board your flight back to ${plan.origin}.`,
+      'train': `Check out and take the local metro to the railway station. Board your return train back to ${plan.origin}.`,
+      'bus': `Check out and head to the bus depot. Board your long-distance coach for the return trip to ${plan.origin}.`,
+      'car': `Check out, load the vehicle, and begin the drive back to ${plan.origin}.`
+    };
+
+    const midActs = activities[plan.purpose] || activities['sightseeing'];
     timeline.innerHTML = '';
     
     for (let i = 1; i <= plan.days; i++) {
       let activity = "";
       if (i === 1) {
-        activity = `Depart from ${plan.origin}. Upon arrival at the international terminal in ${plan.dest}, proceed through customs. Take the express airport train or a pre-booked transfer to the city center. Check into your accommodation, unpack, and head out on foot for a light dinner at a local bistro to acclimate to the time zone.`;
+        activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate.`;
       } else if (i === plan.days) {
-        activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping in ${plan.dest}. Pack up, check out, and arrange a taxi or airport shuttle transfer to the terminal for your departure back to ${plan.origin}.`;
+        activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
       } else {
-        const randIndex = (i * 7) % midActivities.length;
-        activity = midActivities[randIndex];
+        const randIndex = (i * 7) % midActs.length;
+        activity = midActs[randIndex];
       }
 
       timeline.innerHTML += `
