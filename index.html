@@ -3,82 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevDash | Formatters</title>
-  <link rel="stylesheet" href="style.css?v=4.0">
+  <title>WanderPlan | Smart Travel Planner</title>
+  <link rel="stylesheet" href="style.css?v=5.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <i class="fas fa-terminal" style="color: var(--primary);"></i> DevDash
-    </div>
-    <nav class="sidebar-nav">
-      <a href="index.html" class="nav-link active">
-        <i class="fas fa-code"></i> Data Formatters
-      </a>
-      <a href="tools.html" class="nav-link">
-        <i class="fas fa-shield-alt"></i> Generators & Crypto
-      </a>
-    </nav>
-  </aside>
+  <header>
+    <a href="index.html" class="logo"><i class="fas fa-plane-departure"></i> WanderPlan</a>
+  </header>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="topbar">
-      Data Formatters
-    </div>
+  <div class="container" style="max-width: 800px;">
     
-    <div class="content-wrapper">
-      
-      <!-- JSON Formatter Tool -->
-      <div class="card">
-        <div class="card-title">
-          JSON Validator & Beautifier
-          <span id="json-status" class="status-badge">Waiting for input</span>
-        </div>
-        <div class="split-view">
-          <div>
-            <label class="label">Raw JSON String</label>
-            <textarea id="json-input" placeholder='{"key": "value"}' spellcheck="false"></textarea>
-            <div style="margin-top: 10px; display:flex; gap:10px;">
-              <button id="btn-format-json" class="btn"><i class="fas fa-magic"></i> Format</button>
-              <button id="btn-clear-json" class="btn btn-secondary"><i class="fas fa-trash"></i> Clear</button>
-            </div>
-          </div>
-          <div>
-            <label class="label">Formatted Output</label>
-            <div id="json-output" class="output-panel"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- JWT Decoder Tool -->
-      <div class="card">
-        <div class="card-title">
-          JWT Decoder
-          <span id="jwt-status" class="status-badge">Waiting for token</span>
-        </div>
-        <div>
-          <label class="label">Encoded Token (ey...)</label>
-          <textarea id="jwt-input" placeholder="Paste your JSON Web Token here..." style="min-height: 80px;" spellcheck="false"></textarea>
-        </div>
-        
-        <div class="split-view" style="margin-top: 20px;">
-          <div>
-            <label class="label">Header (Algorithm & Type)</label>
-            <div id="jwt-header-output" class="output-panel" style="min-height: 100px;"></div>
-          </div>
-          <div>
-            <label class="label">Payload (Data & Claims)</label>
-            <div id="jwt-payload-output" class="output-panel" style="min-height: 100px;"></div>
-          </div>
-        </div>
-      </div>
-
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Where to next?</h1>
+      <p style="color: var(--text-muted); font-size: 1.1rem;">Enter your trip details below and we will automatically generate a day-by-day itinerary and realistic budget.</p>
     </div>
-  </main>
+
+    <div class="card">
+      <form id="trip-form">
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Origin (e.g., New York, NY)</label>
+            <input type="text" id="input-origin" required placeholder="Where are you leaving from?">
+          </div>
+          <div class="input-group">
+            <label>Destination (e.g., Swiss Alps)</label>
+            <input type="text" id="input-dest" required placeholder="Where do you want to go?">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Duration (Days)</label>
+            <input type="number" id="input-days" required min="1" max="30" value="7">
+          </div>
+          <div class="input-group">
+            <label>Number of Travelers</label>
+            <input type="number" id="input-travelers" required min="1" max="10" value="1">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Travel Style</label>
+          <select id="input-style" required>
+            <option value="budget">Backpacker / Budget</option>
+            <option value="standard" selected>Standard Comfort</option>
+            <option value="luxury">Luxury / Premium</option>
+          </select>
+        </div>
+
+        <div class="input-group" style="margin-top: 30px;">
+          <button type="submit" class="btn"><i class="fas fa-magic"></i> Generate Travel Plan</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
 
   <script src="app.js"></script>
 </body>

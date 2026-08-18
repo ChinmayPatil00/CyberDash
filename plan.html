@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WanderPlan | Your Itinerary</title>
+  <link rel="stylesheet" href="style.css?v=5.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo"><i class="fas fa-plane-departure"></i> WanderPlan</a>
+    <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-weight: 500;">Start New Plan</a>
+  </header>
+
+  <div class="container">
+    
+    <div style="margin-bottom: 30px;">
+      <h1 style="font-size: 2rem; margin-bottom: 5px;">Trip to <span id="display-dest" style="color: var(--primary);">Destination</span></h1>
+      <p style="color: var(--text-muted); font-size: 1.1rem;">
+        <i class="fas fa-calendar-alt"></i> <span id="display-days">X</span> Days &nbsp;&nbsp;|&nbsp;&nbsp; 
+        <i class="fas fa-users"></i> <span id="display-travelers">X</span> Traveler(s) &nbsp;&nbsp;|&nbsp;&nbsp; 
+        <i class="fas fa-suitcase"></i> <span id="display-style" style="text-transform: capitalize;">Style</span>
+      </p>
+    </div>
+
+    <div class="dashboard-grid">
+      
+      <!-- Left: Itinerary Timeline -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-map-marked-alt"></i> Day-by-Day Itinerary</div>
+        <div class="timeline" id="itinerary-timeline">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+      <!-- Right: Budget Breakdown -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-wallet"></i> Estimated Budget</div>
+        
+        <ul class="budget-list" id="budget-list">
+          <!-- Populated by app.js -->
+        </ul>
+
+        <div class="budget-total" id="budget-total">
+          $0
+        </div>
+        <p style="text-align: right; color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Total Estimated Cost (USD)</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
