@@ -151,62 +151,83 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const midActs = activities[plan.purpose] || activities['sightseeing'];
-    timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Generating real-world routing and data...</div>';
+    timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Mining global databases for real locations and photos...</div>';
     
-    // Fetch real data from Wikipedia for the destination
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(plan.dest)}`)
-      .then(res => res.json())
-      .then(wikiData => {
-        let wikiExtract = "";
-        if (wikiData && wikiData.extract) {
-          wikiExtract = `<br><br><div style="background:rgba(14, 165, 233, 0.1); padding:10px; border-left:3px solid var(--primary); border-radius:4px; font-size:0.9rem;"><strong>Real Location Data (${wikiData.title}):</strong> ${wikiData.extract}</div>`;
-        }
+    const destQuery = encodeURIComponent(plan.dest);
+    const mainSummaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${destQuery}`;
+    
+    // Customize search string based on purpose
+    let searchTopic = "tourist attractions";
+    if (plan.purpose === 'culinary') searchTopic = "food and cuisine";
+    if (plan.purpose === 'heritage') searchTopic = "historical sites";
+    if (plan.purpose === 'trekking') searchTopic = "parks and nature";
+    
+    const attractionsUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchTopic + ' in ' + plan.dest)}&gsrlimit=10&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=600&exsentences=3&exintro=1&explaintext=1&format=json&origin=*`;
 
-        timeline.innerHTML = '';
+    Promise.all([
+      fetch(mainSummaryUrl).then(res => res.ok ? res.json() : null).catch(() => null),
+      fetch(attractionsUrl).then(res => res.ok ? res.json() : null).catch(() => null)
+    ]).then(([mainData, attrData]) => {
+      
+      // 1. Process Main Summary
+      let wikiExtract = "";
+      if (mainData && mainData.extract) {
+        wikiExtract = `<br><br><div style="background:rgba(37, 99, 235, 0.05); padding:15px; border-left:4px solid var(--primary); border-radius:4px; font-size:0.95rem;"><strong>📍 Real Location Briefing (${mainData.title}):</strong> ${mainData.extract}</div>`;
+      }
+
+      // 2. Process Real Attractions
+      let realAttractions = [];
+      if (attrData && attrData.query && attrData.query.pages) {
+        // Convert to array and filter out meta pages
+        realAttractions = Object.values(attrData.query.pages).filter(p => !p.title.includes('List of') && p.extract);
+      }
+
+      timeline.innerHTML = '';
+      
+      let attractionIndex = 0;
+
+      for (let i = 1; i <= plan.days; i++) {
+        let activity = "";
         
-        for (let i = 1; i <= plan.days; i++) {
-          let activity = "";
-          if (i === 1) {
-            activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate to ${plan.dest}. ${wikiExtract}`;
-          } else if (i === plan.days) {
-            activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
+        if (i === 1) {
+          activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate to ${plan.dest}. ${wikiExtract}`;
+        } else if (i === plan.days) {
+          activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
+        } else {
+          // If we have real Wikipedia attractions left, use them!
+          if (realAttractions.length > 0) {
+            const attraction = realAttractions[attractionIndex % realAttractions.length];
+            attractionIndex++;
+            
+            let photoHtml = '';
+            if (attraction.thumbnail && attraction.thumbnail.source) {
+              photoHtml = `<img src="${attraction.thumbnail.source}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-top:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="${attraction.title}">`;
+            }
+
+            activity = `
+              <div style="font-weight:600; font-size:1.1rem; color:var(--text-main); margin-bottom:8px;">
+                <i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> Visit: ${attraction.title}
+              </div>
+              <div style="color:var(--text-muted); line-height:1.6;">${attraction.extract}</div>
+              ${photoHtml}
+            `;
           } else {
+            // Fallback to generic if API failed or returned zero results
             const randIndex = (i * 7) % midActs.length;
             activity = midActs[randIndex];
           }
-
-          timeline.innerHTML += `
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-day">Day ${i}</div>
-              <div class="timeline-content">${activity}</div>
-            </div>
-          `;
         }
-      })
-      .catch(err => {
-        // Fallback if Wikipedia fails
-        timeline.innerHTML = '';
-        for (let i = 1; i <= plan.days; i++) {
-          let activity = "";
-          if (i === 1) {
-            activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate to ${plan.dest}.`;
-          } else if (i === plan.days) {
-            activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
-          } else {
-            const randIndex = (i * 7) % midActs.length;
-            activity = midActs[randIndex];
-          }
 
-          timeline.innerHTML += `
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-day">Day ${i}</div>
-              <div class="timeline-content">${activity}</div>
-            </div>
-          `;
-        }
-      });
+        timeline.innerHTML += `
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-day">Day ${i}</div>
+            <div class="timeline-content">${activity}</div>
+          </div>
+        `;
+      }
+
+    });
   }
 
 });
