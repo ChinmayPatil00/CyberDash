@@ -1,4 +1,4 @@
-// WanderPlan v3 - Advanced Economic & Itinerary Engine
+// WanderPlan v7 - MMT Redesign & Multipage Routing Engine
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -25,21 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Page 2: Travel Dashboard (plan.html) ---
-  const timeline = document.getElementById('itinerary-timeline');
+  // --- Common Retrieval ---
+  const rawData = localStorage.getItem('wanderplan_data');
+  if (!rawData && (document.getElementById('budget-list') || document.getElementById('itinerary-timeline'))) {
+    window.location.href = 'index.html'; 
+    return;
+  }
+  const plan = rawData ? JSON.parse(rawData) : null;
+
+  // --- Page 2: Overview & Budget (plan.html) ---
   const budgetList = document.getElementById('budget-list');
   const heroBanner = document.getElementById('hero-banner');
   
-  if (timeline && budgetList) {
-    const rawData = localStorage.getItem('wanderplan_data');
-    if (!rawData) {
-      window.location.href = 'index.html'; 
-      return;
-    }
-    
-    const plan = JSON.parse(rawData);
-    
-    // 1. Populate Headers & Banner
+  if (budgetList && plan) {
     document.getElementById('display-dest').innerText = plan.dest;
     document.getElementById('display-days').innerText = plan.days;
     document.getElementById('display-travelers').innerText = plan.travelers;
@@ -53,30 +51,22 @@ document.addEventListener('DOMContentLoaded', () => {
       heroBanner.style.backgroundImage = `url('https://loremflickr.com/1600/900/${query},landscape/all')`;
     }
 
-    // 2. Advanced Economic Engine
+    // Advanced Economic Engine
     const exchangeRates = { 'USD': 1.0, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.1, 'JPY': 149.5 };
     const rate = exchangeRates[plan.currency] || 1.0;
 
-    // Determine regional cost multiplier based on destination keyword
     const destLower = plan.dest.toLowerCase();
-    let regionalMultiplier = 1.0; // Global average
-    
+    let regionalMultiplier = 1.0; 
     const expensiveRegions = ['us', 'usa', 'america', 'uk', 'london', 'paris', 'france', 'swiss', 'switzerland', 'japan', 'tokyo', 'dubai', 'singapore', 'australia', 'sydney'];
     const cheapRegions = ['india', 'vietnam', 'thailand', 'indonesia', 'bali', 'philippines', 'mexico', 'colombia', 'peru', 'cambodia', 'nepal'];
 
-    if (expensiveRegions.some(r => destLower.includes(r))) {
-      regionalMultiplier = 1.8;
-    } else if (cheapRegions.some(r => destLower.includes(r))) {
-      regionalMultiplier = 0.4;
-    }
+    if (expensiveRegions.some(r => destLower.includes(r))) regionalMultiplier = 1.8;
+    else if (cheapRegions.some(r => destLower.includes(r))) regionalMultiplier = 0.4;
 
     const styleMultiplierUSD = { 'budget': 50, 'standard': 140, 'luxury': 400 }[plan.style];
     const baseDailyCostUSD = styleMultiplierUSD * regionalMultiplier;
-
-    // Transit Base Costs
     const transitBaseCostUSD = { 'airplane': 350, 'train': 120, 'bus': 50, 'car': 80 }[plan.medium];
 
-    // Final Estimates in Chosen Currency
     const transitCost = ((transitBaseCostUSD + (Math.random() * 50)) * plan.travelers) * rate; 
     const accommodation = ((baseDailyCostUSD * 0.45) * plan.days * plan.travelers) * rate;
     const food = ((baseDailyCostUSD * 0.30) * plan.days * plan.travelers) * rate;
@@ -111,52 +101,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('budget-total').innerText = formatter.format(total);
+  }
 
-    // 3. Purpose-Driven Itinerary Engine
-    const activities = {
-      'sightseeing': [
-        "Purchase a daily pass for the local metro system. Visit the central plaza and iconic landmarks. Enjoy lunch at a highly-rated rooftop cafe.",
-        "Take a hop-on-hop-off sightseeing bus to cover major districts. Walk through the bustling downtown area and explore boutique shops.",
-        "Hire a registered taxi or rideshare to visit panoramic viewpoints. Spend the evening enjoying a local theatre or entertainment show."
-      ],
-      'heritage': [
-        "Take a local train to the old-town district. Join a guided historical walking tour to learn about the region's ancient architecture and cultural roots.",
-        "Use the public transit network to visit renowned national museums and heritage monuments. Dine at a historic tavern established centuries ago.",
-        "Book a shuttle to a nearby UNESCO World Heritage site outside the city. Spend the day immersing yourself in local traditions and artisan crafts."
-      ],
-      'trekking': [
-        "Catch an early morning regional bus towards the national park or nature reserve. Begin a moderate acclimatization hike along well-marked nature trails.",
-        "Full day guided trekking expedition. Navigate challenging terrain to reach panoramic viewpoints or waterfalls. Pack a trail lunch to eat in nature.",
-        "Rent bicycles or join an outdoor adventure group. Spend the day exploring rugged coastlines, forests, or valleys, ending with a campfire dinner."
-      ],
-      'culinary': [
-        "Navigate via subway to the city's largest farmers market. Taste authentic street food, interact with local vendors, and sample regional delicacies.",
-        "Take a short taxi ride to a specialized cooking class. Learn how to prepare traditional dishes using local ingredients, followed by a feast.",
-        "Embark on an evening food and wine pairing tour. Walk between hidden local bistros, sampling curated menus and regional beverages."
-      ]
-    };
+  // --- Page 3: Detailed Itinerary (itinerary.html) ---
+  const timeline = document.getElementById('itinerary-timeline');
 
-    const transitStrings = {
-      'airplane': `Board your flight from ${plan.origin}. Upon landing at the international terminal in ${plan.dest}, proceed through customs. Take the express airport train or a pre-booked shuttle to the city center.`,
-      'train': `Depart from the central railway station in ${plan.origin}. Enjoy the scenic overland rail journey. Arrive at the main terminus in ${plan.dest} and catch a local subway to your accommodation.`,
-      'bus': `Board the long-distance coach from ${plan.origin}. Enjoy the highway views during the transit. Arrive at the central bus depot in ${plan.dest} and hail a local taxi to your stay.`,
-      'car': `Pack your vehicle and begin the road trip from ${plan.origin}. Navigate the highways, taking scenic rest stops along the way. Arrive in ${plan.dest}, secure parking, and check into your accommodation.`
-    };
+  if (timeline && plan) {
+    document.getElementById('display-origin').innerText = plan.origin;
+    document.getElementById('display-dest-itin').innerText = plan.dest;
 
-    const departStrings = {
-      'airplane': `Check out and arrange a taxi or airport express train to the terminal. Proceed through security and board your flight back to ${plan.origin}.`,
-      'train': `Check out and take the local metro to the railway station. Board your return train back to ${plan.origin}.`,
-      'bus': `Check out and head to the bus depot. Board your long-distance coach for the return trip to ${plan.origin}.`,
-      'car': `Check out, load the vehicle, and begin the drive back to ${plan.origin}.`
-    };
-
-    const midActs = activities[plan.purpose] || activities['sightseeing'];
-    timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Mining global databases for real locations and photos...</div>';
+    timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Mining global databases for real locations, airports, and photos...</div>';
     
     const destQuery = encodeURIComponent(plan.dest);
     const mainSummaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${destQuery}`;
     
-    // Customize search string based on purpose
+    // Dynamic Airport API Fetch (Using Wikipedia Search)
+    const originAirportUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent('international airport in ' + plan.origin)}&utf8=&format=json&origin=*`;
+    const destAirportUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent('international airport in ' + plan.dest)}&utf8=&format=json&origin=*`;
+
     let searchTopic = "tourist attractions";
     if (plan.purpose === 'culinary') searchTopic = "food and cuisine";
     if (plan.purpose === 'heritage') searchTopic = "historical sites";
@@ -166,8 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Promise.all([
       fetch(mainSummaryUrl).then(res => res.ok ? res.json() : null).catch(() => null),
-      fetch(attractionsUrl).then(res => res.ok ? res.json() : null).catch(() => null)
-    ]).then(([mainData, attrData]) => {
+      fetch(attractionsUrl).then(res => res.ok ? res.json() : null).catch(() => null),
+      fetch(originAirportUrl).then(res => res.ok ? res.json() : null).catch(() => null),
+      fetch(destAirportUrl).then(res => res.ok ? res.json() : null).catch(() => null)
+    ]).then(([mainData, attrData, originAirData, destAirData]) => {
       
       // 1. Process Main Summary
       let wikiExtract = "";
@@ -178,12 +142,35 @@ document.addEventListener('DOMContentLoaded', () => {
       // 2. Process Real Attractions
       let realAttractions = [];
       if (attrData && attrData.query && attrData.query.pages) {
-        // Convert to array and filter out meta pages
         realAttractions = Object.values(attrData.query.pages).filter(p => !p.title.includes('List of') && p.extract);
       }
 
+      // 3. Process Real Airports
+      let originAirport = plan.origin + " Airport";
+      if (originAirData && originAirData.query && originAirData.query.search.length > 0) {
+        originAirport = originAirData.query.search[0].title;
+      }
+      let destAirport = plan.dest + " Airport";
+      if (destAirData && destAirData.query && destAirData.query.search.length > 0) {
+        destAirport = destAirData.query.search[0].title;
+      }
+
+      // 4. Transit Strings with Real Airport Injection
+      const transitStrings = {
+        'airplane': `Board your flight departing from <strong>${originAirport}</strong>. Upon landing at <strong>${destAirport}</strong>, proceed through customs. Take the express airport train or a pre-booked shuttle to the city center.`,
+        'train': `Depart from the central railway station in <strong>${plan.origin}</strong>. Enjoy the scenic overland rail journey. Arrive at the main terminus in <strong>${plan.dest}</strong> and catch a local subway to your accommodation.`,
+        'bus': `Board the long-distance coach from <strong>${plan.origin}</strong>. Enjoy the highway views during the transit. Arrive at the central bus depot in <strong>${plan.dest}</strong> and hail a local taxi to your stay.`,
+        'car': `Pack your vehicle and begin the road trip from <strong>${plan.origin}</strong>. Navigate the highways, taking scenic rest stops along the way. Arrive in <strong>${plan.dest}</strong>, secure parking, and check into your accommodation.`
+      };
+
+      const departStrings = {
+        'airplane': `Check out and arrange a taxi or airport express train to <strong>${destAirport}</strong>. Proceed through security and board your flight back to <strong>${originAirport}</strong>.`,
+        'train': `Check out and take the local metro to the railway station. Board your return train back to <strong>${plan.origin}</strong>.`,
+        'bus': `Check out and head to the bus depot. Board your long-distance coach for the return trip to <strong>${plan.origin}</strong>.`,
+        'car': `Check out, load the vehicle, and begin the drive back to <strong>${plan.origin}</strong>.`
+      };
+
       timeline.innerHTML = '';
-      
       let attractionIndex = 0;
 
       for (let i = 1; i <= plan.days; i++) {
@@ -194,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (i === plan.days) {
           activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
         } else {
-          // If we have real Wikipedia attractions left, use them!
           if (realAttractions.length > 0) {
             const attraction = realAttractions[attractionIndex % realAttractions.length];
             attractionIndex++;
@@ -212,9 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${photoHtml}
             `;
           } else {
-            // Fallback to generic if API failed or returned zero results
-            const randIndex = (i * 7) % midActs.length;
-            activity = midActs[randIndex];
+            activity = `Explore the beautiful city of ${plan.dest}. Enjoy the local ${plan.purpose} scene.`;
           }
         }
 
@@ -226,8 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
       }
-
     });
   }
-
 });

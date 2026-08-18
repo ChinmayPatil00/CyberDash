@@ -22,80 +22,80 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-text">
-      <h1>Discover Your Next Adventure</h1>
-      <p>Intelligent, data-driven itineraries built for the modern explorer.</p>
-    </div>
-
-    <!-- Booking Form -->
-    <div class="booking-form-container">
-      <form id="trip-form">
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>Origin</label>
-            <input type="text" id="input-origin" required placeholder="Where from?">
-          </div>
-          <div class="form-group">
-            <label>Destination</label>
-            <input type="text" id="input-dest" required placeholder="Where to?">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Duration (Days)</label>
-            <input type="number" id="input-days" required min="1" max="30" value="7">
-          </div>
-          <div class="form-group">
-            <label>Travelers</label>
-            <input type="number" id="input-travelers" required min="1" max="10" value="2">
-          </div>
-          <div class="form-group">
-            <label>Class</label>
-            <select id="input-style" required>
-              <option value="budget">Economy / Budget</option>
-              <option value="standard" selected>Standard Comfort</option>
-              <option value="luxury">First Class / Luxury</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row" style="margin-bottom: 5px;">
-          <div class="form-group">
-            <label>Transit</label>
-            <select id="input-medium" required>
-              <option value="airplane" selected>Flights</option>
-              <option value="train">Rail Network</option>
-              <option value="bus">Long-distance Coach</option>
-              <option value="car">Road Trip</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Experience</label>
-            <select id="input-purpose" required>
-              <option value="sightseeing" selected>City Sightseeing</option>
-              <option value="heritage">Heritage & Culture</option>
-              <option value="trekking">Trekking & Nature</option>
-              <option value="culinary">Food & Culinary</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Currency</label>
-            <select id="input-currency" required>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="INR">INR (₹)</option>
-              <option value="JPY">JPY (¥)</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-large">Build Detailed Itinerary <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
-      </form>
-    </div>
+    <h1>Plan the Perfect Trip</h1>
+    <p>Real-world locations, live flight data, and intelligent budgeting.</p>
   </section>
+
+  <!-- Booking Form -->
+  <div class="booking-form-container">
+    <form id="trip-form">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>From</label>
+          <input type="text" id="input-origin" required placeholder="City or Airport">
+        </div>
+        <div class="form-group">
+          <label>To</label>
+          <input type="text" id="input-dest" required placeholder="City or Airport">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Duration</label>
+          <input type="number" id="input-days" required min="1" max="30" value="7">
+        </div>
+        <div class="form-group">
+          <label>Travelers</label>
+          <input type="number" id="input-travelers" required min="1" max="10" value="2">
+        </div>
+        <div class="form-group">
+          <label>Class</label>
+          <select id="input-style" required>
+            <option value="budget">Economy / Budget</option>
+            <option value="standard" selected>Standard Comfort</option>
+            <option value="luxury">First Class / Luxury</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-bottom: 5px;">
+        <div class="form-group">
+          <label>Transit</label>
+          <select id="input-medium" required>
+            <option value="airplane" selected>Flights</option>
+            <option value="train">Rail Network</option>
+            <option value="bus">Long-distance Coach</option>
+            <option value="car">Road Trip</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Experience</label>
+          <select id="input-purpose" required>
+            <option value="sightseeing" selected>City Sightseeing</option>
+            <option value="heritage">Heritage & Culture</option>
+            <option value="trekking">Trekking & Nature</option>
+            <option value="culinary">Food & Culinary</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <select id="input-currency" required>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="JPY">JPY (¥)</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="btn-large-container">
+    <button type="submit" form="trip-form" class="btn-large">SEARCH <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
+  </div>
 
   <!-- Trending Destinations -->
   <section class="trending">
