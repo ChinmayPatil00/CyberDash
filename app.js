@@ -151,27 +151,62 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const midActs = activities[plan.purpose] || activities['sightseeing'];
-    timeline.innerHTML = '';
+    timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Generating real-world routing and data...</div>';
     
-    for (let i = 1; i <= plan.days; i++) {
-      let activity = "";
-      if (i === 1) {
-        activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate.`;
-      } else if (i === plan.days) {
-        activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
-      } else {
-        const randIndex = (i * 7) % midActs.length;
-        activity = midActs[randIndex];
-      }
+    // Fetch real data from Wikipedia for the destination
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(plan.dest)}`)
+      .then(res => res.json())
+      .then(wikiData => {
+        let wikiExtract = "";
+        if (wikiData && wikiData.extract) {
+          wikiExtract = `<br><br><div style="background:rgba(14, 165, 233, 0.1); padding:10px; border-left:3px solid var(--primary); border-radius:4px; font-size:0.9rem;"><strong>Real Location Data (${wikiData.title}):</strong> ${wikiData.extract}</div>`;
+        }
 
-      timeline.innerHTML += `
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-day">Day ${i}</div>
-          <div class="timeline-content">${activity}</div>
-        </div>
-      `;
-    }
+        timeline.innerHTML = '';
+        
+        for (let i = 1; i <= plan.days; i++) {
+          let activity = "";
+          if (i === 1) {
+            activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate to ${plan.dest}. ${wikiExtract}`;
+          } else if (i === plan.days) {
+            activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
+          } else {
+            const randIndex = (i * 7) % midActs.length;
+            activity = midActs[randIndex];
+          }
+
+          timeline.innerHTML += `
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-day">Day ${i}</div>
+              <div class="timeline-content">${activity}</div>
+            </div>
+          `;
+        }
+      })
+      .catch(err => {
+        // Fallback if Wikipedia fails
+        timeline.innerHTML = '';
+        for (let i = 1; i <= plan.days; i++) {
+          let activity = "";
+          if (i === 1) {
+            activity = `${transitStrings[plan.medium]} Unpack, settle in, and head out on foot for a light dinner to acclimate to ${plan.dest}.`;
+          } else if (i === plan.days) {
+            activity = `Enjoy a final breakfast and complete any last-minute souvenir shopping. ${departStrings[plan.medium]}`;
+          } else {
+            const randIndex = (i * 7) % midActs.length;
+            activity = midActs[randIndex];
+          }
+
+          timeline.innerHTML += `
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-day">Day ${i}</div>
+              <div class="timeline-content">${activity}</div>
+            </div>
+          `;
+        }
+      });
   }
 
 });
