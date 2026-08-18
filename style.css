@@ -1,15 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap');
 
 :root {
-  --bg-color: #050505;
-  --panel-bg: #121212;
-  --panel-border: #333333;
-  --text-main: #ffffff;
-  --text-muted: #888888;
-  --accent-color: #ff9500; /* Aerospace Amber */
-  --accent-hover: #ffb74d;
-  --alert-color: #ff3b30;
-  --success-color: #34c759;
+  --bg-dark: #09090b;
+  --bg-panel: #18181b;
+  --bg-input: #27272a;
+  --border-color: #3f3f46;
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --danger: #ef4444;
+  --success: #22c55e;
 }
 
 * {
@@ -19,184 +20,203 @@
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-main);
   font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  display: flex;
   height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+  width: 250px;
+  background-color: var(--bg-panel);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  line-height: 1.5;
 }
 
-/* Header */
-header {
-  background-color: var(--panel-bg);
-  border-bottom: 1px solid var(--panel-border);
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-}
-
-header .sys-status {
-  color: var(--success-color);
-  font-weight: bold;
-}
-
-header .sys-time {
-  color: var(--text-muted);
-}
-
-/* Main Grid Layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 300px 1fr 350px;
-  grid-template-rows: 1fr;
-  flex: 1;
-  gap: 1px;
-  background-color: var(--panel-border); /* 1px gap forms borders */
-}
-
-/* Panels */
-.panel {
-  background-color: var(--panel-bg);
+.sidebar-header {
   padding: 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  gap: 5px;
+}
+
+.nav-link {
+  padding: 10px 15px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: var(--bg-input);
+  color: var(--text-main);
+}
+
+.nav-link.active {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
 
-.panel-header {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--panel-border);
-  padding-bottom: 5px;
-}
-
-/* Data Tables / Telemetry */
-.data-group {
-  margin-bottom: 25px;
-}
-.data-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-}
-.data-label {
-  color: var(--text-muted);
-}
-.data-value {
-  color: var(--accent-color);
-  font-weight: bold;
-}
-.data-value.nominal {
-  color: var(--success-color);
-}
-
-/* Rover Image Feed */
-.image-container {
-  flex: 1;
-  background: #000;
-  border: 1px solid var(--panel-border);
+.topbar {
+  height: 65px;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 10px;
+  padding: 0 30px;
+  font-weight: 500;
 }
-.image-container img {
+
+.content-wrapper {
+  padding: 30px;
+  max-width: 1200px;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.image-meta {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background: rgba(0,0,0,0.8);
-  padding: 5px 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--accent-color);
-  border: 1px solid var(--panel-border);
+  margin: 0 auto;
 }
 
-/* Command Queue */
-.command-input-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+/* UI Components */
+.card {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
-.command-input-container input {
-  flex: 1;
-  background: var(--bg-color);
-  border: 1px solid var(--panel-border);
-  color: var(--text-main);
-  padding: 8px 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  outline: none;
-}
-.command-input-container input:focus {
-  border-color: var(--accent-color);
-}
-.btn {
-  background: var(--panel-border);
-  color: var(--text-main);
-  border: none;
-  padding: 8px 15px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+
+.card-title {
+  font-size: 1.1rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn:hover {
-  background: #444;
-}
-.btn-primary {
-  background: var(--accent-color);
-  color: #000;
-}
-.btn-primary:hover {
-  background: var(--accent-hover);
-}
-
-.command-log {
-  list-style: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  flex: 1;
-  overflow-y: auto;
-}
-.command-log li {
-  padding: 8px 0;
-  border-bottom: 1px dotted var(--panel-border);
+  margin-bottom: 16px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
 }
-.cmd-text {
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+textarea:focus, input[type="text"]:focus {
+  border-color: var(--primary);
+}
+
+textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
   color: var(--text-main);
 }
-.cmd-status {
-  font-weight: bold;
+
+.btn-secondary:hover {
+  background-color: #3f3f46;
 }
-.status-queued { color: var(--text-muted); }
-.status-tx { color: var(--accent-color); }
-.status-ack { color: var(--success-color); }
+
+/* Specific Tool Layouts */
+.split-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.output-panel {
+  background-color: #000;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 16px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  min-height: 150px;
+  white-space: pre-wrap;
+  color: #e2e8f0;
+}
+
+.output-panel.error {
+  color: var(--danger);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+}
+.status-badge.success { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+.status-badge.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-color); }
-::-webkit-scrollbar-thumb { background: var(--panel-border); }
-::-webkit-scrollbar-thumb:hover { background: #555; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }

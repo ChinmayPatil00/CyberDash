@@ -3,97 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mission Control Authentication</title>
-  <link rel="stylesheet" href="style.css?v=3.0">
-  <style>
-    .auth-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-color: var(--bg-color);
-    }
-    .auth-box {
-      background-color: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      padding: 40px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .auth-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      color: var(--text-main);
-      letter-spacing: 2px;
-    }
-    .auth-subtitle {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 30px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .auth-input {
-      width: 100%;
-      background: var(--bg-color);
-      border: 1px solid var(--panel-border);
-      color: var(--text-main);
-      padding: 12px;
-      margin-bottom: 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      outline: none;
-      text-align: center;
-    }
-    .auth-input:focus {
-      border-color: var(--accent-color);
-    }
-    .auth-btn {
-      width: 100%;
-      background: var(--accent-color);
-      color: #000;
-      border: none;
-      padding: 12px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: background 0.2s;
-    }
-    .auth-btn:hover {
-      background: var(--accent-hover);
-    }
-    .auth-footer {
-      margin-top: 30px;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
-    }
-  </style>
+  <title>DevDash | Formatters</title>
+  <link rel="stylesheet" href="style.css?v=4.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <div class="auth-container">
-    <div class="auth-box">
-      <div class="auth-title">JPL MISSION CONTROL</div>
-      <div class="auth-subtitle">Perseverance Surface Operations</div>
-      
-      <input type="password" class="auth-input" placeholder="ENTER OPERATOR ID" value="ADMIN-77X">
-      
-      <a href="dashboard.html" style="text-decoration: none;">
-        <button class="auth-btn">Authenticate & Uplink</button>
-      </a>
-
-      <div class="auth-footer">
-        UNAUTHORIZED ACCESS STRICTLY PROHIBITED<br>
-        SECURE UPLINK: ENABLED
-      </div>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-terminal" style="color: var(--primary);"></i> DevDash
     </div>
-  </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-link active">
+        <i class="fas fa-code"></i> Data Formatters
+      </a>
+      <a href="tools.html" class="nav-link">
+        <i class="fas fa-shield-alt"></i> Generators & Crypto
+      </a>
+    </nav>
+  </aside>
 
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="topbar">
+      Data Formatters
+    </div>
+    
+    <div class="content-wrapper">
+      
+      <!-- JSON Formatter Tool -->
+      <div class="card">
+        <div class="card-title">
+          JSON Validator & Beautifier
+          <span id="json-status" class="status-badge">Waiting for input</span>
+        </div>
+        <div class="split-view">
+          <div>
+            <label class="label">Raw JSON String</label>
+            <textarea id="json-input" placeholder='{"key": "value"}' spellcheck="false"></textarea>
+            <div style="margin-top: 10px; display:flex; gap:10px;">
+              <button id="btn-format-json" class="btn"><i class="fas fa-magic"></i> Format</button>
+              <button id="btn-clear-json" class="btn btn-secondary"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+          </div>
+          <div>
+            <label class="label">Formatted Output</label>
+            <div id="json-output" class="output-panel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JWT Decoder Tool -->
+      <div class="card">
+        <div class="card-title">
+          JWT Decoder
+          <span id="jwt-status" class="status-badge">Waiting for token</span>
+        </div>
+        <div>
+          <label class="label">Encoded Token (ey...)</label>
+          <textarea id="jwt-input" placeholder="Paste your JSON Web Token here..." style="min-height: 80px;" spellcheck="false"></textarea>
+        </div>
+        
+        <div class="split-view" style="margin-top: 20px;">
+          <div>
+            <label class="label">Header (Algorithm & Type)</label>
+            <div id="jwt-header-output" class="output-panel" style="min-height: 100px;"></div>
+          </div>
+          <div>
+            <label class="label">Payload (Data & Claims)</label>
+            <div id="jwt-payload-output" class="output-panel" style="min-height: 100px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
