@@ -50,18 +50,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const exchangeRates = { 'USD': 1.0, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.1 };
     const rate = exchangeRates[plan.currency] || 1.0;
 
-    // Budget Engine
-    const baseDailyCostUSD = 80;
-    const accommodation = ((baseDailyCostUSD * 0.4) * plan.days * plan.travelers) * rate;
-    const food = ((baseDailyCostUSD * 0.3) * plan.days * plan.travelers) * rate;
-    const gearRental = ((baseDailyCostUSD * 0.15) * plan.days * plan.travelers) * rate;
-    const permits = ((baseDailyCostUSD * 0.15) * plan.days * plan.travelers) * rate; 
+    // --- DEEP DYNAMIC BUDGET ENGINE ---
+    const budgetData = {
+      'treks': { base: 60, labels: ['Basecamp Hostels', 'Trail Rations', 'Trekking Gear Rental', 'National Park Permits'] },
+      'bike': { base: 120, labels: ['Motels & Stops', 'Roadhouse Meals', 'Motorcycle Rental & Fuel', 'Tolls & Insurance'] },
+      'monsoon': { base: 80, labels: ['Rainforest Lodges', 'Local Cafes', 'All-Terrain Vehicle Rent', 'Eco-Tourism Fees'] },
+      'roadtrip': { base: 100, labels: ['Highway Motels', 'Diners & Snacks', 'Car Rental & Gas', 'Tolls & Parking'] },
+      'jungle': { base: 150, labels: ['Safari Lodge', 'All-Inclusive Meals', 'Jeep & Guide Hire', 'Conservation Fees'] },
+      'skydiving': { base: 350, labels: ['Dropzone Hotel', 'Energy Meals', 'Jump Tickets & Aircraft', 'Parachute Rental'] },
+      'kayaking': { base: 90, labels: ['Riverside Cabins', 'Campfire Food', 'Kayak & PFD Rental', 'River Access Fees'] },
+      'surf': { base: 110, labels: ['Beachfront Hostel', 'Seafood & Drinks', 'Surfboard Rental', 'Beach Access'] },
+      'camping': { base: 30, labels: ['Campsite Fees', 'Supermarket Groceries', 'Firewood & Ice', 'Wilderness Permits'] },
+      'climbing': { base: 70, labels: ['Bivouac/Hostel', 'High-Calorie Rations', 'Rope & Harness Rental', 'Crag Access Fees'] }
+    };
+
+    const bData = budgetData[plan.purpose] || budgetData['treks'];
+    const baseDailyCostUSD = bData.base;
+    
+    const cost1 = ((baseDailyCostUSD * 0.4) * plan.days * plan.travelers) * rate;
+    const cost2 = ((baseDailyCostUSD * 0.3) * plan.days * plan.travelers) * rate;
+    const cost3 = ((baseDailyCostUSD * 0.2) * plan.days * plan.travelers) * rate;
+    const cost4 = ((baseDailyCostUSD * 0.1) * plan.days * plan.travelers) * rate; 
 
     const expenses = [
-      { label: 'Basecamp / Accommodation', amount: accommodation },
-      { label: 'Rations & Water', amount: food },
-      { label: 'Gear Rental & Fuel', amount: gearRental },
-      { label: 'Permits & Access Fees', amount: permits }
+      { label: bData.labels[0], amount: cost1 },
+      { label: bData.labels[1], amount: cost2 },
+      { label: bData.labels[2], amount: cost3 },
+      { label: bData.labels[3], amount: cost4 }
     ];
 
     const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
@@ -91,21 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     timeline.innerHTML = '<div style="color:var(--primary);"><i class="fas fa-satellite-dish fa-spin"></i> Establishing uplink with Wikipedia geo-satellites...</div>';
     
-    // Wikipedia Search Strings mapped to vibes
-    const searchMap = {
-      'treks': 'mountains and hiking trails',
-      'bike': 'scenic motorcycle routes',
-      'monsoon': 'waterfalls and hills',
-      'roadtrip': 'famous highways',
-      'jungle': 'national parks and wildlife',
-      'skydiving': 'drop zones and extreme sports',
-      'kayaking': 'rivers and lakes',
-      'surf': 'beaches and surfing',
-      'camping': 'forests and camping sites',
-      'climbing': 'canyons and rock formations'
+    // --- DEEP DYNAMIC ITINERARY ENGINE ---
+    const routeData = {
+      'treks': { search: 'mountains and hiking trails', start: 'Arrive at the trailhead basecamp. Check gear, review the topographic map, and acclimatize.', end: 'Descend from the summit. Celebrate the climb and extract.' },
+      'bike': { search: 'scenic motorcycle routes', start: 'Pick up the bikes. Check tire pressure, top up the fuel, and hit the open highway.', end: 'Return the motorcycles. Clean off the road dust and head home.' },
+      'monsoon': { search: 'waterfalls and hills', start: 'Equip wet-weather gear. Enter the heavy rain zone and begin the slippery ascent.', end: 'Dry off at the final waypoint. Extract before the storm worsens.' },
+      'roadtrip': { search: 'famous highways', start: 'Load the trunk, grab snacks, and merge onto the interstate towards the horizon.', end: 'Pull into the final rest stop. Return the rental car and head out.' },
+      'jungle': { search: 'national parks and wildlife', start: 'Meet your local ranger guide at the jungle perimeter. Apply bug spray and enter the canopy.', end: 'Emerge from the dense foliage. Debrief with the rangers.' },
+      'skydiving': { search: 'drop zones and extreme sports', start: 'Arrive at the dropzone. Sign waivers, complete the safety briefing, and suit up.', end: 'Log your final jump in the logbook. Pack the rig and extract.' },
+      'kayaking': { search: 'rivers and lakes', start: 'Launch the kayaks into the water. Secure the dry bags and paddle downstream.', end: 'Pull the kayaks ashore. Load them onto the roof racks and depart.' },
+      'surf': { search: 'beaches and surfing', start: 'Hit the beach early. Check the tide charts, wax the boards, and paddle out.', end: 'Catch the final sunset wave. Wash off the saltwater and head back.' },
+      'camping': { search: 'forests and camping sites', start: 'Hike into the wilderness. Pitch the tents, gather firewood, and start the campfire.', end: 'Douse the campfire completely. Leave no trace, pack up, and hike out.' },
+      'climbing': { search: 'canyons and rock formations', start: 'Arrive at the crag. Flake the ropes, rack the gear, and prepare for the first ascent.', end: 'Pull the ropes down from the final anchor. Pack the gear and hike out.' }
     };
 
-    const searchStr = `${searchMap[plan.purpose]} in ${plan.dest}`;
+    const rData = routeData[plan.purpose] || routeData['treks'];
+    const searchStr = `${rData.search} in ${plan.dest}`;
     const attractionsUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=10&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=600&exsentences=3&exintro=1&explaintext=1&format=json&origin=*`;
 
     fetch(attractionsUrl)
@@ -123,9 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
           let content = "";
           
           if (i === 1) {
-            content = `Deploy from ${plan.origin}. Arrive at Basecamp in ${plan.dest}. Prep gear and acclimatize.`;
+            content = `Deploy from ${plan.origin}. ${rData.start}`;
           } else if (i === plan.days) {
-            content = `Mission accomplished. Break down camp and extract back to ${plan.origin}.`;
+            content = `${rData.end} Return to ${plan.origin}.`;
           } else {
             if (places.length > 0) {
               const p = places[pIndex % places.length];
