@@ -47,30 +47,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('display-travelers').innerText = plan.travelers;
     document.getElementById('display-purpose').innerText = vibeNames[plan.purpose];
 
-    const exchangeRates = { 'USD': 1.0, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.1 };
-    const rate = exchangeRates[plan.currency] || 1.0;
-
-    // --- DEEP DYNAMIC BUDGET ENGINE ---
+    // --- DEEP DYNAMIC BUDGET ENGINE (NATIVE INR) ---
     const budgetData = {
-      'treks': { base: 60, labels: ['Basecamp Hostels', 'Trail Rations', 'Trekking Gear Rental', 'National Park Permits'] },
-      'bike': { base: 120, labels: ['Motels & Stops', 'Roadhouse Meals', 'Motorcycle Rental & Fuel', 'Tolls & Insurance'] },
-      'monsoon': { base: 80, labels: ['Rainforest Lodges', 'Local Cafes', 'All-Terrain Vehicle Rent', 'Eco-Tourism Fees'] },
-      'roadtrip': { base: 100, labels: ['Highway Motels', 'Diners & Snacks', 'Car Rental & Gas', 'Tolls & Parking'] },
-      'jungle': { base: 150, labels: ['Safari Lodge', 'All-Inclusive Meals', 'Jeep & Guide Hire', 'Conservation Fees'] },
-      'skydiving': { base: 350, labels: ['Dropzone Hotel', 'Energy Meals', 'Jump Tickets & Aircraft', 'Parachute Rental'] },
-      'kayaking': { base: 90, labels: ['Riverside Cabins', 'Campfire Food', 'Kayak & PFD Rental', 'River Access Fees'] },
-      'surf': { base: 110, labels: ['Beachfront Hostel', 'Seafood & Drinks', 'Surfboard Rental', 'Beach Access'] },
-      'camping': { base: 30, labels: ['Campsite Fees', 'Supermarket Groceries', 'Firewood & Ice', 'Wilderness Permits'] },
-      'climbing': { base: 70, labels: ['Bivouac/Hostel', 'High-Calorie Rations', 'Rope & Harness Rental', 'Crag Access Fees'] }
+      'treks': { base: 1200, labels: ['Basecamp/Tents', 'Trail Rations', 'Transport/Guides', 'Permits'] },
+      'bike': { base: 3500, labels: ['Stays & Motels', 'Roadhouse Meals', 'Bike Rental/Fuel', 'Tolls/Misc'] },
+      'monsoon': { base: 1500, labels: ['Rainforest Lodges', 'Local Cafes', 'Transport', 'Fees'] },
+      'roadtrip': { base: 2500, labels: ['Highway Motels', 'Diners & Snacks', 'Car Rental/Gas', 'Tolls/Parking'] },
+      'jungle': { base: 4000, labels: ['Safari Lodge', 'Meals', 'Jeep & Guide Hire', 'Forest Fees'] },
+      'skydiving': { base: 15000, labels: ['Hotel', 'Meals', 'Jump Tickets', 'Gear Rental'] },
+      'kayaking': { base: 2000, labels: ['Riverside Cabins', 'Food', 'Kayak Rental', 'Access Fees'] },
+      'surf': { base: 2500, labels: ['Beachfront Stay', 'Seafood', 'Surfboard Rental', 'Misc'] },
+      'camping': { base: 800, labels: ['Campsite Fees', 'Groceries', 'Firewood/Ice', 'Permits'] },
+      'climbing': { base: 1500, labels: ['Hostel', 'Rations', 'Gear Rental', 'Crag Access'] }
     };
 
     const bData = budgetData[plan.purpose] || budgetData['treks'];
-    const baseDailyCostUSD = bData.base;
+    const baseDailyCostINR = bData.base;
     
-    const cost1 = ((baseDailyCostUSD * 0.4) * plan.days * plan.travelers) * rate;
-    const cost2 = ((baseDailyCostUSD * 0.3) * plan.days * plan.travelers) * rate;
-    const cost3 = ((baseDailyCostUSD * 0.2) * plan.days * plan.travelers) * rate;
-    const cost4 = ((baseDailyCostUSD * 0.1) * plan.days * plan.travelers) * rate; 
+    const exchangeRates = { 'USD': 0.012, 'EUR': 0.011, 'GBP': 0.0095, 'INR': 1.0 };
+    const rate = exchangeRates[plan.currency] || 1.0;
+    
+    const totalINR = baseDailyCostINR * plan.days * plan.travelers;
+    const finalTotal = totalINR * rate;
+    
+    const cost1 = (totalINR * 0.4) * rate;
+    const cost2 = (totalINR * 0.3) * rate;
+    const cost3 = (totalINR * 0.2) * rate;
+    const cost4 = (totalINR * 0.1) * rate;
 
     const expenses = [
       { label: bData.labels[0], amount: cost1 },
@@ -79,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
       { label: bData.labels[3], amount: cost4 }
     ];
 
-    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
+    const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
 
     let total = 0;
     budgetList.innerHTML = '';

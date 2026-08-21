@@ -58,6 +58,26 @@
       </div>
     </div>
 
+    <!-- MISSION MODAL (Hidden by default) -->
+    <div class="modal-overlay" id="mission-modal">
+      <div class="modal-content">
+        <div class="modal-close" id="modal-close"><i class="fas fa-times"></i></div>
+        <div class="modal-title" id="m-title">Mission Title</div>
+        <div style="color:var(--primary); font-weight:700; margin-bottom:15px;" id="m-region">Region</div>
+        <img id="m-img" class="modal-image" src="" alt="Loading...">
+        <div class="modal-desc" id="m-desc">Establishing uplink to Wikipedia for mission briefing...</div>
+        
+        <div class="modal-stats">
+          <div class="modal-stat-box">🔥 Difficulty: <span id="m-diff" style="color:var(--primary);">Hard</span></div>
+          <div class="modal-stat-box">⏱️ Duration: <span id="m-days">2 Days</span></div>
+          <div class="modal-stat-box">⛺ Base: <span id="m-base">Bari</span></div>
+          <div class="modal-stat-box">💸 Cost: <span id="m-cost">₹3000/person</span></div>
+        </div>
+
+        <button class="btn-generate" id="m-select-btn" style="padding:15px; font-size:1.2rem;">Select This Mission 🚀</button>
+      </div>
+    </div>
+
     <!-- The Setup Form -->
     <div class="setup-box glass">
       <form id="trip-form">
@@ -122,32 +142,37 @@
 
   <script src="app.js"></script>
   <script>
-    // --- Indian Adventure Database ---
+    // --- Advanced Indian Adventure Database (with INR cost per day) ---
     const indianAdventures = {
       'treks': [
-        { title: 'Kalsubai Peak', region: 'Sahyadris, MH', base: 'Bari', dest: 'Kalsubai Peak', diff: 'Hard', days: 2 },
-        { title: 'Rajmachi Trek', region: 'Lonavala, MH', base: 'Udhewadi', dest: 'Rajmachi', diff: 'Easy', days: 1 },
-        { title: 'Kheerganga', region: 'Parvati Valley, HP', base: 'Barshaini', dest: 'Kheerganga', diff: 'Medium', days: 3 },
-        { title: 'Harishchandragad', region: 'Ahmednagar, MH', base: 'Khireshwar', dest: 'Harishchandragad', diff: 'Hard', days: 2 }
+        { title: 'Kalsubai Peak', region: 'Sahyadris, MH', base: 'Bari', dest: 'Kalsubai Peak', diff: 'Hard', days: 2, cost: 1200 },
+        { title: 'Rajmachi Trek', region: 'Lonavala, MH', base: 'Udhewadi', dest: 'Rajmachi', diff: 'Easy', days: 1, cost: 800 },
+        { title: 'Kheerganga', region: 'Parvati Valley, HP', base: 'Barshaini', dest: 'Kheerganga', diff: 'Medium', days: 3, cost: 1500 },
+        { title: 'Harishchandragad', region: 'Ahmednagar, MH', base: 'Khireshwar', dest: 'Harishchandragad', diff: 'Hard', days: 2, cost: 1300 },
+        { title: 'Sandhan Valley', region: 'Sahyadris, MH', base: 'Samrad', dest: 'Sandhan Valley', diff: 'Extreme', days: 2, cost: 1800 },
+        { title: 'Valley of Flowers', region: 'Uttarakhand', base: 'Govindghat', dest: 'Valley of Flowers', diff: 'Medium', days: 5, cost: 2000 }
       ],
       'bike': [
-        { title: 'Manali to Leh', region: 'Himalayas', base: 'Manali', dest: 'Leh', diff: 'Extreme', days: 10 },
-        { title: 'Mumbai to Goa', region: 'Konkan Coast', base: 'Mumbai', dest: 'Goa', diff: 'Medium', days: 4 },
-        { title: 'Spiti Valley', region: 'Himachal', base: 'Shimla', dest: 'Kaza', diff: 'Extreme', days: 8 }
+        { title: 'Manali to Leh', region: 'Himalayas', base: 'Manali', dest: 'Leh', diff: 'Extreme', days: 10, cost: 3500 },
+        { title: 'Mumbai to Goa', region: 'Konkan Coast', base: 'Mumbai', dest: 'Goa', diff: 'Medium', days: 4, cost: 2500 },
+        { title: 'Spiti Valley Circuit', region: 'Himachal', base: 'Shimla', dest: 'Kaza', diff: 'Extreme', days: 8, cost: 3000 },
+        { title: 'Meghalaya Circuit', region: 'North East', base: 'Shillong', dest: 'Cherrapunji', diff: 'Medium', days: 5, cost: 2800 }
       ],
       'monsoon': [
-        { title: 'Malshej Ghat', region: 'Maharashtra', base: 'Kalyan', dest: 'Malshej Ghat', diff: 'Easy', days: 1 },
-        { title: 'Amboli Ghat', region: 'Sindhudurg, MH', base: 'Sawantwadi', dest: 'Amboli', diff: 'Medium', days: 2 },
-        { title: 'Coorg Safari', region: 'Karnataka', base: 'Madikeri', dest: 'Coorg', diff: 'Medium', days: 3 }
+        { title: 'Malshej Ghat', region: 'Maharashtra', base: 'Kalyan', dest: 'Malshej Ghat', diff: 'Easy', days: 1, cost: 1500 },
+        { title: 'Amboli Ghat', region: 'Sindhudurg, MH', base: 'Sawantwadi', dest: 'Amboli', diff: 'Medium', days: 2, cost: 1800 },
+        { title: 'Coorg Safari', region: 'Karnataka', base: 'Madikeri', dest: 'Coorg', diff: 'Medium', days: 3, cost: 2200 },
+        { title: 'Tiger Point', region: 'Lonavala, MH', base: 'Khandala', dest: 'Lonavala', diff: 'Easy', days: 1, cost: 1200 }
       ],
       'roadtrip': [
-        { title: 'Golden Triangle', region: 'North India', base: 'Delhi', dest: 'Jaipur', diff: 'Easy', days: 5 },
-        { title: 'East Coast Road', region: 'Tamil Nadu', base: 'Chennai', dest: 'Pondicherry', diff: 'Easy', days: 2 }
+        { title: 'Golden Triangle', region: 'North India', base: 'Delhi', dest: 'Jaipur', diff: 'Easy', days: 5, cost: 2500 },
+        { title: 'East Coast Road', region: 'Tamil Nadu', base: 'Chennai', dest: 'Pondicherry', diff: 'Easy', days: 2, cost: 2000 }
       ],
       'jungle': [
-        { title: 'Ranthambore', region: 'Rajasthan', base: 'Sawai Madhopur', dest: 'Ranthambore National Park', diff: 'Easy', days: 3 },
-        { title: 'Jim Corbett', region: 'Uttarakhand', base: 'Ramnagar', dest: 'Jim Corbett National Park', diff: 'Easy', days: 4 },
-        { title: 'Tadoba Andhari', region: 'Maharashtra', base: 'Chandrapur', dest: 'Tadoba', diff: 'Easy', days: 3 }
+        { title: 'Ranthambore', region: 'Rajasthan', base: 'Sawai Madhopur', dest: 'Ranthambore National Park', diff: 'Easy', days: 3, cost: 4000 },
+        { title: 'Jim Corbett', region: 'Uttarakhand', base: 'Ramnagar', dest: 'Jim Corbett National Park', diff: 'Easy', days: 4, cost: 3500 },
+        { title: 'Tadoba Andhari', region: 'Maharashtra', base: 'Chandrapur', dest: 'Tadoba', diff: 'Easy', days: 3, cost: 4200 },
+        { title: 'Bandhavgarh', region: 'Madhya Pradesh', base: 'Umaria', dest: 'Bandhavgarh', diff: 'Medium', days: 3, cost: 3800 }
       ]
     };
 
@@ -161,6 +186,70 @@
     const inDest = document.getElementById('input-dest');
     const daysSlider = document.getElementById('input-days');
     const daysVal = document.getElementById('val-days');
+    
+    // Modal Elements
+    const modal = document.getElementById('mission-modal');
+    const modalClose = document.getElementById('modal-close');
+    const mTitle = document.getElementById('m-title');
+    const mRegion = document.getElementById('m-region');
+    const mImg = document.getElementById('m-img');
+    const mDesc = document.getElementById('m-desc');
+    const mDiff = document.getElementById('m-diff');
+    const mDays = document.getElementById('m-days');
+    const mBase = document.getElementById('m-base');
+    const mCost = document.getElementById('m-cost');
+    const mSelectBtn = document.getElementById('m-select-btn');
+
+    let currentSelectedItem = null;
+
+    modalClose.addEventListener('click', () => modal.classList.remove('active'));
+    
+    function openModal(item) {
+      currentSelectedItem = item;
+      mTitle.innerText = item.title;
+      mRegion.innerText = item.region;
+      mDiff.innerText = item.diff;
+      mDays.innerText = `${item.days} Days`;
+      mBase.innerText = item.base;
+      mCost.innerText = `₹${item.cost} / day / person`;
+      
+      mImg.src = '';
+      mDesc.innerText = 'Establishing uplink to Wikipedia for mission briefing...';
+      modal.classList.add('active');
+
+      // Live Wikipedia Fetch for Modal
+      const searchStr = `${item.dest} ${item.region}`;
+      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=1&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=800&exsentences=4&exintro=1&explaintext=1&format=json&origin=*`;
+      
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if(data.query && data.query.pages) {
+            const p = Object.values(data.query.pages)[0];
+            if(p.extract) mDesc.innerText = p.extract;
+            if(p.thumbnail && p.thumbnail.source) {
+              mImg.src = p.thumbnail.source;
+            } else {
+              mImg.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Kalsubai_peak.jpg/800px-Kalsubai_peak.jpg'; // Fallback
+            }
+          } else {
+            mDesc.innerText = 'Wiki Database offline for this coordinate. Await manual briefing.';
+          }
+        });
+    }
+
+    mSelectBtn.addEventListener('click', () => {
+      if(currentSelectedItem) {
+        inOrigin.value = currentSelectedItem.base;
+        inDest.value = currentSelectedItem.dest;
+        daysSlider.value = currentSelectedItem.days;
+        daysVal.innerText = `${currentSelectedItem.days} Days`;
+        updateLiveEstimate();
+        
+        document.querySelectorAll('.suggestion-card').forEach(c => c.style.borderColor = 'transparent');
+      }
+      modal.classList.remove('active');
+    });
 
     function renderSuggestions(vibe) {
       const data = indianAdventures[vibe];
@@ -184,18 +273,7 @@
             <span>⏱️ ${item.days} Days | ⛺ Base: ${item.base}</span>
           </div>
         `;
-        // Autofill logic
-        card.addEventListener('click', () => {
-          inOrigin.value = item.base;
-          inDest.value = item.dest;
-          daysSlider.value = item.days;
-          daysVal.innerText = `${item.days} Days`;
-          updateLiveEstimate();
-          
-          // Visual feedback
-          document.querySelectorAll('.suggestion-card').forEach(c => c.style.borderColor = 'transparent');
-          card.style.borderColor = 'var(--primary)';
-        });
+        card.addEventListener('click', () => openModal(item));
         sugScroll.appendChild(card);
       });
     }
