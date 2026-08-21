@@ -108,16 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- DEEP DYNAMIC ITINERARY ENGINE ---
     const routeData = {
-      'treks': { search: 'mountains and hiking trails', start: 'Arrive at the trailhead basecamp. Check gear, review the topographic map, and acclimatize.', end: 'Descend from the summit. Celebrate the climb and extract.' },
-      'bike': { search: 'scenic motorcycle routes', start: 'Pick up the bikes. Check tire pressure, top up the fuel, and hit the open highway.', end: 'Return the motorcycles. Clean off the road dust and head home.' },
-      'monsoon': { search: 'waterfalls and hills', start: 'Equip wet-weather gear. Enter the heavy rain zone and begin the slippery ascent.', end: 'Dry off at the final waypoint. Extract before the storm worsens.' },
-      'roadtrip': { search: 'famous highways', start: 'Load the trunk, grab snacks, and merge onto the interstate towards the horizon.', end: 'Pull into the final rest stop. Return the rental car and head out.' },
-      'jungle': { search: 'national parks and wildlife', start: 'Meet your local ranger guide at the jungle perimeter. Apply bug spray and enter the canopy.', end: 'Emerge from the dense foliage. Debrief with the rangers.' },
-      'skydiving': { search: 'drop zones and extreme sports', start: 'Arrive at the dropzone. Sign waivers, complete the safety briefing, and suit up.', end: 'Log your final jump in the logbook. Pack the rig and extract.' },
-      'kayaking': { search: 'rivers and lakes', start: 'Launch the kayaks into the water. Secure the dry bags and paddle downstream.', end: 'Pull the kayaks ashore. Load them onto the roof racks and depart.' },
+      'treks': { search: 'mountains and hiking trails', start: 'Hit the trailhead basecamp. Do a quick fit check, secure the bags, and get moving.', end: 'Summit achieved. Catch your breath, snap the pics, and hike out.' },
+      'bike': { search: 'scenic motorcycle routes', start: 'Grab the bikes. Check tire pressure, top up the fuel, and hit the open highway.', end: 'Return the motorcycles. Clean off the road dust and head out.' },
+      'monsoon': { search: 'waterfalls and hills', start: 'Throw on the wet-weather gear. Enter the heavy rain zone and embrace the mud.', end: 'Dry off at the final stop. Grab some warm food and head out.' },
+      'roadtrip': { search: 'famous highways', start: 'Load up the trunk, grab the aux cord, and merge onto the interstate.', end: 'Pull into the final rest stop. Return the rental and wrap it up.' },
+      'jungle': { search: 'national parks and wildlife', start: 'Meet your local ranger at the edge. Apply bug spray and enter the canopy.', end: 'Emerge from the dense foliage. Debrief with the rangers and head out.' },
+      'skydiving': { search: 'drop zones and extreme sports', start: 'Pull up to the dropzone. Sign waivers, get the safety brief, and suit up.', end: 'Log your final jump. Pack the rig, grab the GoPro footage, and leave.' },
+      'kayaking': { search: 'rivers and lakes', start: 'Launch the kayaks. Secure the dry bags and start paddling downstream.', end: 'Pull the kayaks ashore. Load them onto the roof racks and depart.' },
       'surf': { search: 'beaches and surfing', start: 'Hit the beach early. Check the tide charts, wax the boards, and paddle out.', end: 'Catch the final sunset wave. Wash off the saltwater and head back.' },
-      'camping': { search: 'forests and camping sites', start: 'Hike into the wilderness. Pitch the tents, gather firewood, and start the campfire.', end: 'Douse the campfire completely. Leave no trace, pack up, and hike out.' },
-      'climbing': { search: 'canyons and rock formations', start: 'Arrive at the crag. Flake the ropes, rack the gear, and prepare for the first ascent.', end: 'Pull the ropes down from the final anchor. Pack the gear and hike out.' }
+      'camping': { search: 'forests and camping sites', start: 'Hike deep into the wilderness. Pitch the tents and start the campfire.', end: 'Douse the campfire completely. Leave no trace, pack up, and hike out.' },
+      'climbing': { search: 'canyons and rock formations', start: 'Arrive at the crag. Flake the ropes, chalk up, and prepare for the first ascent.', end: 'Pull the ropes down from the final anchor. Pack the gear and hike out.' }
     };
 
     const rData = routeData[plan.purpose] || routeData['treks'];
@@ -139,9 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
           let content = "";
           
           if (i === 1) {
-            content = `Deploy from ${plan.origin}. ${rData.start}`;
+            content = `Kicking off from ${plan.origin}. ${rData.start}`;
           } else if (i === plan.days) {
-            content = `${rData.end} Return to ${plan.origin}.`;
+            content = `${rData.end} Heading back to ${plan.origin}.`;
           } else {
             if (places.length > 0) {
               const p = places[pIndex % places.length];
@@ -153,12 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
               }
 
               content = `
-                <div style="color:var(--text-main); font-weight:900; font-size:1.3rem; margin-bottom:10px;">TARGET: ${p.title}</div>
+                <div style="color:var(--text-main); font-weight:900; font-size:1.3rem; margin-bottom:10px;">📍 THE SPOT: ${p.title}</div>
                 <div>${p.extract}</div>
                 ${img}
               `;
             } else {
-              content = `Push forward through the terrain. Execute ${vibeNames[plan.purpose]} protocols.`;
+              content = `Keep the momentum going. Execute ${vibeNames[plan.purpose]} protocols.`;
             }
           }
 
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       })
       .catch(() => {
-        timeline.innerHTML = '<div style="color:red;">Uplink failed. Proceed using offline maps.</div>';
+        timeline.innerHTML = '<div style="color:red;">No signal. Proceed using offline maps.</div>';
       });
   }
 
