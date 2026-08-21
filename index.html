@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Venture - Gen-Z Expeditions</title>
-  <link rel="stylesheet" href="style.css?v=9.0">
+  <title>Venture India | Hyper-Local Adventures</title>
+  <link rel="stylesheet" href="style.css?v=10.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
   <!-- Navbar -->
   <nav class="navbar">
-    <a href="index.html" class="logo">Venture.</a>
+    <a href="index.html" class="logo">Venture<span>India</span></a>
     <div class="nav-links">
       <a href="#">Expeditions</a>
       <a href="#">Gear</a>
@@ -22,15 +22,15 @@
   <div class="container">
     
     <div class="hero">
-      <h1>What's your next <span class="highlight">vibe?</span></h1>
-      <p>Select your expedition type and build a custom mission loadout.</p>
+      <h1>Discover incredible <span style="color:var(--primary);">India.</span></h1>
+      <p>Select your vibe. We'll suggest the best local routes.</p>
     </div>
 
-    <!-- 10 Option Grid -->
-    <div class="vibe-grid" id="vibe-selector">
+    <!-- Vibe Grid -->
+    <div class="vibe-grid glass" id="vibe-selector" style="padding: 20px;">
       <div class="vibe-card active" data-vibe="treks">
         <span class="vibe-icon">🏔️</span>
-        <div class="vibe-title">Alpine Treks</div>
+        <div class="vibe-title">Treks</div>
       </div>
       <div class="vibe-card" data-vibe="bike">
         <span class="vibe-icon">🏍️</span>
@@ -38,57 +38,44 @@
       </div>
       <div class="vibe-card" data-vibe="monsoon">
         <span class="vibe-icon">🌧️</span>
-        <div class="vibe-title">Monsoon Rides</div>
+        <div class="vibe-title">Monsoon</div>
       </div>
       <div class="vibe-card" data-vibe="roadtrip">
         <span class="vibe-icon">🚗</span>
-        <div class="vibe-title">Epic Roadtrips</div>
+        <div class="vibe-title">Roadtrips</div>
       </div>
       <div class="vibe-card" data-vibe="jungle">
-        <span class="vibe-icon">🌴</span>
-        <div class="vibe-title">Jungle Safari</div>
+        <span class="vibe-icon">🐅</span>
+        <div class="vibe-title">Safari</div>
       </div>
-      <div class="vibe-card" data-vibe="skydiving">
-        <span class="vibe-icon">🪂</span>
-        <div class="vibe-title">Skydiving</div>
-      </div>
-      <div class="vibe-card" data-vibe="kayaking">
-        <span class="vibe-icon">🛶</span>
-        <div class="vibe-title">Kayaking</div>
-      </div>
-      <div class="vibe-card" data-vibe="surf">
-        <span class="vibe-icon">🏄</span>
-        <div class="vibe-title">Surf & Beach</div>
-      </div>
-      <div class="vibe-card" data-vibe="camping">
-        <span class="vibe-icon">⛺</span>
-        <div class="vibe-title">Wild Camping</div>
-      </div>
-      <div class="vibe-card" data-vibe="climbing">
-        <span class="vibe-icon">🧗</span>
-        <div class="vibe-title">Rock Climbing</div>
+    </div>
+
+    <!-- Dynamic Suggestions Area -->
+    <div id="suggestions-area" class="suggestions-container glass">
+      <h3>🔥 Trending <span id="sug-label">Treks</span> in India</h3>
+      <div class="suggestions-scroll" id="suggestions-scroll">
+        <!-- Rendered via JS -->
       </div>
     </div>
 
     <!-- The Setup Form -->
-    <div class="setup-box">
-      <h2>Set The Vibe ⚡</h2>
+    <div class="setup-box glass">
       <form id="trip-form">
         
         <input type="hidden" id="input-purpose" value="treks">
 
         <div class="form-row">
           <div class="input-group">
-            <label>Starting from?</label>
+            <label>Starting from (Base Village/City)</label>
             <div class="autocomplete-wrapper">
-              <input type="text" id="input-origin" required placeholder="e.g. Mumbai" autocomplete="off">
+              <input type="text" id="input-origin" required placeholder="e.g. Bari Village" autocomplete="off">
               <div id="autocomplete-list-origin" class="autocomplete-list"></div>
             </div>
           </div>
           <div class="input-group">
-            <label>Where to?</label>
+            <label>Where to (Destination)</label>
             <div class="autocomplete-wrapper">
-              <input type="text" id="input-dest" required placeholder="e.g. Manali" autocomplete="off">
+              <input type="text" id="input-dest" required placeholder="e.g. Kalsubai Peak" autocomplete="off">
               <div id="autocomplete-list-dest" class="autocomplete-list"></div>
             </div>
           </div>
@@ -112,16 +99,16 @@
 
         <div class="form-row">
           <div class="input-group">
-            <label>Duration: <span id="val-days" style="color:var(--primary); font-size:1.2rem;">5 Days</span></label>
-            <input type="range" id="input-days" min="1" max="30" value="5" required>
+            <label>Duration: <span id="val-days" style="color:var(--primary); font-size:1.2rem; font-weight:900;">2 Days</span></label>
+            <input type="range" id="input-days" min="1" max="30" value="2" required>
           </div>
           <div class="input-group">
-            <label>Squad Size: <span id="val-travelers" style="color:var(--primary); font-size:1.2rem;">2 People</span></label>
-            <input type="range" id="input-travelers" min="1" max="20" value="2" required>
+            <label>Squad Size: <span id="val-travelers" style="color:var(--primary); font-size:1.2rem; font-weight:900;">4 People</span></label>
+            <input type="range" id="input-travelers" min="1" max="20" value="4" required>
           </div>
         </div>
 
-        <div class="live-estimate" style="text-align:center; padding: 20px; border-radius:12px; background:var(--bg-input); border: 1px solid var(--primary); margin-bottom: 20px;">
+        <div style="text-align:center; padding: 20px; border-radius:12px; background:rgba(255,255,255,0.5); border: 1px solid var(--primary); margin-bottom: 20px;">
           <div style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Live Cost Estimate</div>
           <div id="live-cost" style="font-size:2.5rem; font-weight:900; color:var(--text-main);">₹0</div>
         </div>
@@ -135,18 +122,98 @@
 
   <script src="app.js"></script>
   <script>
-    // Handle Vibe Selection
+    // --- Indian Adventure Database ---
+    const indianAdventures = {
+      'treks': [
+        { title: 'Kalsubai Peak', region: 'Sahyadris, MH', base: 'Bari', dest: 'Kalsubai Peak', diff: 'Hard', days: 2 },
+        { title: 'Rajmachi Trek', region: 'Lonavala, MH', base: 'Udhewadi', dest: 'Rajmachi', diff: 'Easy', days: 1 },
+        { title: 'Kheerganga', region: 'Parvati Valley, HP', base: 'Barshaini', dest: 'Kheerganga', diff: 'Medium', days: 3 },
+        { title: 'Harishchandragad', region: 'Ahmednagar, MH', base: 'Khireshwar', dest: 'Harishchandragad', diff: 'Hard', days: 2 }
+      ],
+      'bike': [
+        { title: 'Manali to Leh', region: 'Himalayas', base: 'Manali', dest: 'Leh', diff: 'Extreme', days: 10 },
+        { title: 'Mumbai to Goa', region: 'Konkan Coast', base: 'Mumbai', dest: 'Goa', diff: 'Medium', days: 4 },
+        { title: 'Spiti Valley', region: 'Himachal', base: 'Shimla', dest: 'Kaza', diff: 'Extreme', days: 8 }
+      ],
+      'monsoon': [
+        { title: 'Malshej Ghat', region: 'Maharashtra', base: 'Kalyan', dest: 'Malshej Ghat', diff: 'Easy', days: 1 },
+        { title: 'Amboli Ghat', region: 'Sindhudurg, MH', base: 'Sawantwadi', dest: 'Amboli', diff: 'Medium', days: 2 },
+        { title: 'Coorg Safari', region: 'Karnataka', base: 'Madikeri', dest: 'Coorg', diff: 'Medium', days: 3 }
+      ],
+      'roadtrip': [
+        { title: 'Golden Triangle', region: 'North India', base: 'Delhi', dest: 'Jaipur', diff: 'Easy', days: 5 },
+        { title: 'East Coast Road', region: 'Tamil Nadu', base: 'Chennai', dest: 'Pondicherry', diff: 'Easy', days: 2 }
+      ],
+      'jungle': [
+        { title: 'Ranthambore', region: 'Rajasthan', base: 'Sawai Madhopur', dest: 'Ranthambore National Park', diff: 'Easy', days: 3 },
+        { title: 'Jim Corbett', region: 'Uttarakhand', base: 'Ramnagar', dest: 'Jim Corbett National Park', diff: 'Easy', days: 4 },
+        { title: 'Tadoba Andhari', region: 'Maharashtra', base: 'Chandrapur', dest: 'Tadoba', diff: 'Easy', days: 3 }
+      ]
+    };
+
+    // Elements
     const vibeCards = document.querySelectorAll('.vibe-card');
     const purposeInput = document.getElementById('input-purpose');
+    const sugArea = document.getElementById('suggestions-area');
+    const sugScroll = document.getElementById('suggestions-scroll');
+    const sugLabel = document.getElementById('sug-label');
+    const inOrigin = document.getElementById('input-origin');
+    const inDest = document.getElementById('input-dest');
+    const daysSlider = document.getElementById('input-days');
+    const daysVal = document.getElementById('val-days');
 
+    function renderSuggestions(vibe) {
+      const data = indianAdventures[vibe];
+      if (!data) {
+        sugArea.style.display = 'none';
+        return;
+      }
+      
+      sugArea.style.display = 'block';
+      sugLabel.innerText = document.querySelector(`.vibe-card[data-vibe="${vibe}"] .vibe-title`).innerText;
+      sugScroll.innerHTML = '';
+
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'suggestion-card';
+        card.innerHTML = `
+          <div class="sug-title">${item.title}</div>
+          <div class="sug-meta">
+            <span>📍 ${item.region}</span>
+            <span>🔥 Diff: <strong>${item.diff}</strong></span>
+            <span>⏱️ ${item.days} Days | ⛺ Base: ${item.base}</span>
+          </div>
+        `;
+        // Autofill logic
+        card.addEventListener('click', () => {
+          inOrigin.value = item.base;
+          inDest.value = item.dest;
+          daysSlider.value = item.days;
+          daysVal.innerText = `${item.days} Days`;
+          updateLiveEstimate();
+          
+          // Visual feedback
+          document.querySelectorAll('.suggestion-card').forEach(c => c.style.borderColor = 'transparent');
+          card.style.borderColor = 'var(--primary)';
+        });
+        sugScroll.appendChild(card);
+      });
+    }
+
+    // Handle Vibe Selection
     vibeCards.forEach(card => {
       card.addEventListener('click', () => {
         vibeCards.forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-        purposeInput.value = card.getAttribute('data-vibe');
-        updateLiveEstimate(); // update cost on vibe change
+        const vibe = card.getAttribute('data-vibe');
+        purposeInput.value = vibe;
+        renderSuggestions(vibe);
+        updateLiveEstimate();
       });
     });
+
+    // Init
+    renderSuggestions('treks');
 
     // Set default date to tomorrow
     const tomorrow = new Date();
@@ -154,8 +221,6 @@
     document.getElementById('input-date').valueAsDate = tomorrow;
 
     // --- Interactive Sliders ---
-    const daysSlider = document.getElementById('input-days');
-    const daysVal = document.getElementById('val-days');
     daysSlider.addEventListener('input', (e) => {
       daysVal.innerText = `${e.target.value} Days`;
       updateLiveEstimate();
@@ -179,23 +244,24 @@
       const currency = currencySelect.value;
 
       const exchangeRates = { 'USD': 1.0, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.1 };
-      const rate = exchangeRates[currency] || 1.0;
+      const rate = exchangeRates[currency] || 83.1; // fallback
 
       const budgetData = {
         'treks': 60, 'bike': 120, 'monsoon': 80, 'roadtrip': 100,
-        'jungle': 150, 'skydiving': 350, 'kayaking': 90, 'surf': 110,
-        'camping': 30, 'climbing': 70
+        'jungle': 150
       };
 
       const baseDailyCostUSD = budgetData[purpose] || 60;
       const totalUSD = baseDailyCostUSD * days * travelers;
-      const finalCost = totalUSD * rate;
+      
+      // If INR is selected, don't multiply by 83.1 twice. 
+      // Base costs are in USD, so we multiply by INR rate to get INR.
+      const finalCost = currency === 'USD' ? totalUSD : totalUSD * rate;
 
-      const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, maximumFractionDigits: 0 });
+      const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency, maximumFractionDigits: 0 });
       document.getElementById('live-cost').innerText = formatter.format(finalCost);
     }
 
-    // Run once on load
     updateLiveEstimate();
 
     // --- Autocomplete Engine via Nominatim API ---
@@ -224,7 +290,6 @@
                   div.className = 'autocomplete-item';
                   div.innerText = item.display_name;
                   div.addEventListener('click', () => {
-                    // Just take the first part (city/location name)
                     input.value = item.display_name.split(',')[0]; 
                     list.style.display = 'none';
                   });
@@ -235,10 +300,9 @@
               }
             })
             .catch(() => { list.style.display = 'none'; });
-        }, 300); // 300ms debounce
+        }, 300);
       });
 
-      // Close list if clicked outside
       document.addEventListener('click', (e) => {
         if (e.target !== input && e.target !== list) {
           list.style.display = 'none';
