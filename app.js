@@ -9,10 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
     tripForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
+      const date1 = new Date(document.getElementById('input-date').value);
+      const returnVal = document.getElementById('input-return-date').value;
+      let calculatedDays = 5; // Default for one-way
+      
+      if (returnVal) {
+        const date2 = new Date(returnVal);
+        const diffTime = Math.abs(date2 - date1);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        if (diffDays > 0) calculatedDays = diffDays;
+      }
+
       const planData = {
         origin: document.getElementById('input-origin').value.trim(),
         dest: document.getElementById('input-dest').value.trim(),
-        days: parseInt(document.getElementById('input-days').value, 10),
+        days: calculatedDays,
         travelers: parseInt(document.getElementById('input-travelers').value, 10),
         style: document.getElementById('input-style').value,
         currency: document.getElementById('input-currency').value,
