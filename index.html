@@ -3,229 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AeroTrip - Flight & Hotel Bookings</title>
-  <link rel="stylesheet" href="style.css?v=8.0">
+  <title>Venture - Gen-Z Expeditions</title>
+  <link rel="stylesheet" href="style.css?v=9.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Header Background -->
-  <header class="hero">
-    <nav class="navbar">
-      <a href="index.html" class="logo">AeroTrip</a>
-      <div class="nav-links">
-        <a href="#"><i class="fas fa-percent"></i> Offers</a>
-        <a href="#"><i class="fas fa-suitcase"></i> My Trips</a>
-        <a href="#" style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 4px;">Login or Create Account</a>
-      </div>
-    </nav>
-  </header>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">Venture.</a>
+    <div class="nav-links">
+      <a href="#">Expeditions</a>
+      <a href="#">Gear</a>
+      <a href="#">Log In</a>
+    </div>
+  </nav>
 
-  <!-- Main Booking Area -->
-  <main class="booking-container">
+  <div class="container">
     
-    <!-- Category Tabs (Floating) -->
-    <div class="category-tabs">
-      <a href="#" class="tab-item active"><i class="fas fa-plane"></i>Flights</a>
-      <a href="#" class="tab-item"><i class="fas fa-building"></i>Hotels</a>
-      <a href="#" class="tab-item"><i class="fas fa-home"></i>Homestays</a>
-      <a href="#" class="tab-item"><i class="fas fa-umbrella-beach"></i>Holidays</a>
-      <a href="#" class="tab-item"><i class="fas fa-train"></i>Trains</a>
-      <a href="#" class="tab-item"><i class="fas fa-bus"></i>Buses</a>
-      <a href="#" class="tab-item"><i class="fas fa-car"></i>Cabs</a>
+    <div class="hero">
+      <h1>What's your next <span class="highlight">vibe?</span></h1>
+      <p>Select your expedition type and build a custom mission loadout.</p>
     </div>
 
-    <!-- The White Booking Card -->
-    <div class="booking-card">
-      
-      <!-- Trip Types -->
-      <div class="trip-types">
-        <label class="radio-label">
-          <input type="radio" name="tripType" value="one-way" checked> One Way
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="tripType" value="round-trip"> Round Trip
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="tripType" value="multi-city"> Multi City
-        </label>
+    <!-- 10 Option Grid -->
+    <div class="vibe-grid" id="vibe-selector">
+      <div class="vibe-card active" data-vibe="treks">
+        <span class="vibe-icon">🏔️</span>
+        <div class="vibe-title">Alpine Treks</div>
       </div>
+      <div class="vibe-card" data-vibe="bike">
+        <span class="vibe-icon">🏍️</span>
+        <div class="vibe-title">Bike Rides</div>
+      </div>
+      <div class="vibe-card" data-vibe="monsoon">
+        <span class="vibe-icon">🌧️</span>
+        <div class="vibe-title">Monsoon Rides</div>
+      </div>
+      <div class="vibe-card" data-vibe="roadtrip">
+        <span class="vibe-icon">🚗</span>
+        <div class="vibe-title">Epic Roadtrips</div>
+      </div>
+      <div class="vibe-card" data-vibe="jungle">
+        <span class="vibe-icon">🌴</span>
+        <div class="vibe-title">Jungle Safari</div>
+      </div>
+      <div class="vibe-card" data-vibe="skydiving">
+        <span class="vibe-icon">🪂</span>
+        <div class="vibe-title">Skydiving</div>
+      </div>
+      <div class="vibe-card" data-vibe="kayaking">
+        <span class="vibe-icon">🛶</span>
+        <div class="vibe-title">Kayaking</div>
+      </div>
+      <div class="vibe-card" data-vibe="surf">
+        <span class="vibe-icon">🏄</span>
+        <div class="vibe-title">Surf & Beach</div>
+      </div>
+      <div class="vibe-card" data-vibe="camping">
+        <span class="vibe-icon">⛺</span>
+        <div class="vibe-title">Wild Camping</div>
+      </div>
+      <div class="vibe-card" data-vibe="climbing">
+        <span class="vibe-icon">🧗</span>
+        <div class="vibe-title">Rock Climbing</div>
+      </div>
+    </div>
 
+    <!-- The Setup Form -->
+    <div class="setup-box">
+      <h2>Mission Details</h2>
       <form id="trip-form">
-        <!-- Big Search Inputs Grid -->
-        <div class="search-grid">
-          
-          <div class="search-box">
-            <div class="search-label">FROM</div>
-            <input type="text" id="input-origin" class="search-input" required placeholder="City" value="Delhi">
-            <div class="search-subtext" id="sub-origin">Enter departure city</div>
-          </div>
+        
+        <input type="hidden" id="input-purpose" value="treks">
 
-          <div class="search-box">
-            <div class="search-label">TO</div>
-            <input type="text" id="input-dest" class="search-input" required placeholder="City" value="Mumbai">
-            <div class="search-subtext" id="sub-dest">Enter destination city</div>
+        <div class="form-row">
+          <div class="input-group">
+            <label>Origin Basecamp</label>
+            <input type="text" id="input-origin" required placeholder="e.g. Seattle">
           </div>
-
-          <div class="search-box">
-            <div class="search-label">DEPARTURE <i class="fas fa-chevron-down" style="color:var(--primary); font-size:0.8rem; margin-left:5px;"></i></div>
-            <input type="date" id="input-date" class="search-input" style="font-size: 1.2rem; margin-top: 10px;" required>
-            <div class="search-subtext">Select travel date</div>
+          <div class="input-group">
+            <label>Target Dropzone</label>
+            <input type="text" id="input-dest" required placeholder="e.g. Mount Rainier">
           </div>
-
-          <div class="search-box" id="return-box" style="opacity: 0.4; pointer-events: none;">
-            <div class="search-label">RETURN <i class="fas fa-chevron-down" style="color:var(--primary); font-size:0.8rem; margin-left:5px;"></i></div>
-            <input type="date" id="input-return-date" class="search-input" style="font-size: 1.2rem; margin-top: 10px;">
-            <div class="search-subtext">Optional return date</div>
-          </div>
-
-          <div class="search-box" style="flex: 1.2;">
-            <div class="search-label">TRAVELLERS & CLASS <i class="fas fa-chevron-down" style="color:var(--primary); font-size:0.8rem; margin-left:5px;"></i></div>
-            
-            <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
-              <input type="number" id="input-travelers" class="search-input" style="font-size: 1.5rem; width: 50px; text-align: center; border-bottom: 2px solid var(--primary);" min="1" max="9" value="1" required>
-              <select id="input-style" style="border: none; font-size: 1rem; font-weight: 700; outline: none; background: transparent; cursor: pointer;">
-                <option value="budget">Economy</option>
-                <option value="standard" selected>Premium Economy</option>
-                <option value="luxury">Business</option>
-              </select>
-            </div>
-            
-            <!-- Hidden inputs to pass data to our app.js engine -->
-            <input type="hidden" id="input-days" value="5">
-            <input type="hidden" id="input-medium" value="airplane">
-            <input type="hidden" id="input-purpose" value="sightseeing">
-            <input type="hidden" id="input-currency" value="INR">
-          </div>
-
         </div>
 
-        <!-- Fare Types Bar -->
-        <div class="fare-types-bar" id="fare-bar">
-          Select A Fare Type:
-          <div class="fare-tag active">Regular Fares</div>
-          <div class="fare-tag">Armed Forces Fares</div>
-          <div class="fare-tag">Student Fares</div>
-          <div class="fare-tag">Senior Citizen Fares</div>
-          <div class="fare-tag">Doctors & Nurses</div>
+        <div class="form-row">
+          <div class="input-group">
+            <label>Launch Date</label>
+            <input type="date" id="input-date" required>
+          </div>
+          <div class="input-group">
+            <label>Duration (Days)</label>
+            <input type="number" id="input-days" min="1" max="30" value="5" required>
+          </div>
         </div>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label>Squad Size (People)</label>
+            <input type="number" id="input-travelers" min="1" max="20" value="2" required>
+          </div>
+          <div class="input-group">
+            <label>Currency</label>
+            <select id="input-currency" required>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-generate">Generate Expedition Data</button>
+
       </form>
     </div>
 
-    <!-- Search Button overlapping the bottom -->
-    <div class="btn-search-container">
-      <button type="submit" form="trip-form" class="btn-search">SEARCH</button>
-    </div>
-
-  </main>
-
-  <!-- Offers & Trending -->
-  <section class="trending">
-    <h2>Handpicked Collections for You</h2>
-    <div class="cards-grid">
-      <div class="card" onclick="document.getElementById('input-dest').value='Goa';">
-        <img src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80" class="card-img">
-        <div class="card-content">
-          <h3>Stunning Goa Beaches</h3>
-          <p>Flights + Hotels starting @ ₹12,999</p>
-        </div>
-      </div>
-      <div class="card" onclick="document.getElementById('input-dest').value='Dubai';">
-        <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80" class="card-img">
-        <div class="card-content">
-          <h3>Dubai Shopping Festival</h3>
-          <p>Grab up to 20% OFF on Emirates</p>
-        </div>
-      </div>
-      <div class="card" onclick="document.getElementById('input-dest').value='Kashmir';">
-        <img src="https://images.unsplash.com/photo-1566837945700-30058778f306?auto=format&fit=crop&w=600&q=80" class="card-img">
-        <div class="card-content">
-          <h3>Paradise on Earth: Kashmir</h3>
-          <p>Exclusive Houseboat stays</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <script src="app.js"></script>
-  
-  <!-- Interactive UI Logic -->
   <script>
+    // Handle Vibe Selection
+    const vibeCards = document.querySelectorAll('.vibe-card');
+    const purposeInput = document.getElementById('input-purpose');
+
+    vibeCards.forEach(card => {
+      card.addEventListener('click', () => {
+        vibeCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        purposeInput.value = card.getAttribute('data-vibe');
+      });
+    });
+
     // Set default date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     document.getElementById('input-date').valueAsDate = tomorrow;
-
-    // Handle Trip Type Radios (Enable/Disable Return Date)
-    const tripRadios = document.querySelectorAll('input[name="tripType"]');
-    const returnBox = document.getElementById('return-box');
-    const returnDate = document.getElementById('input-return-date');
-
-    tripRadios.forEach(radio => {
-      radio.addEventListener('change', (e) => {
-        if (e.target.value === 'round-trip') {
-          returnBox.style.opacity = '1';
-          returnBox.style.pointerEvents = 'auto';
-          returnDate.required = true;
-        } else {
-          returnBox.style.opacity = '0.4';
-          returnBox.style.pointerEvents = 'none';
-          returnDate.required = false;
-          returnDate.value = '';
-        }
-      });
-    });
-
-    // Handle Category Tabs Active State
-    const tabs = document.querySelectorAll('.tab-item');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        e.preventDefault();
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        // Change transit medium based on tab
-        const tabText = tab.innerText.trim().toLowerCase();
-        const mediumInput = document.getElementById('input-medium');
-        if(tabText === 'flights') mediumInput.value = 'airplane';
-        if(tabText === 'trains') mediumInput.value = 'train';
-        if(tabText === 'buses') mediumInput.value = 'bus';
-        if(tabText === 'cabs') mediumInput.value = 'car';
-      });
-    });
-
-    // Handle Fare Tags Active State
-    const fareTags = document.querySelectorAll('.fare-tag');
-    fareTags.forEach(tag => {
-      tag.addEventListener('click', () => {
-        fareTags.forEach(t => t.classList.remove('active'));
-        tag.classList.add('active');
-      });
-    });
-
-    // Dynamic Airport Subtext Simulation
-    const originInput = document.getElementById('input-origin');
-    const destInput = document.getElementById('input-dest');
-    const originSub = document.getElementById('sub-origin');
-    const destSub = document.getElementById('sub-dest');
-
-    originInput.addEventListener('input', (e) => {
-      if (e.target.value.length > 2) {
-        originSub.innerHTML = `<i class="fas fa-plane-departure" style="color:var(--primary);"></i> ${e.target.value.toUpperCase().substring(0,3)} International Airport`;
-      } else {
-        originSub.innerText = "Enter departure city";
-      }
-    });
-
-    destInput.addEventListener('input', (e) => {
-      if (e.target.value.length > 2) {
-        destSub.innerHTML = `<i class="fas fa-plane-arrival" style="color:var(--primary);"></i> ${e.target.value.toUpperCase().substring(0,3)} International Airport`;
-      } else {
-        destSub.innerText = "Enter destination city";
-      }
-    });
-
   </script>
-< / b o d y > < / h t m l > 
- 
- 
+</body>
+</html>
