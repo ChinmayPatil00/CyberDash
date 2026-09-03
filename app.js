@@ -205,6 +205,8 @@ document.getElementById('trip-form').addEventListener('submit', async (e) => {
   
   currentPlan = {
     origin: inOrigin.value,
+    originLat: inOrigin.dataset.lat || '19.0760',
+    originLon: inOrigin.dataset.lon || '72.8777',
     dest: inDest.value,
     lat: inDest.dataset.lat || '19.0760',
     lon: inDest.dataset.lon || '72.8777',
@@ -268,7 +270,20 @@ async function generateDashboard(plan) {
     } catch(e) { console.error('Currency API offline'); rate = { 'USD': 0.012, 'EUR': 0.011, 'GBP': 0.0095 }[plan.currency] || 1.0; }
   }
 
-  // --- 1. Hyper-Local Budget & Transit Engine ---
+  // --- 1. Haversine Physics & Dynamic Routing Engine ---
+  function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = (lat2 - lat1) * (Math.PI/180);
+    var dLon = (lon2 - lon1) * (Math.PI/180); 
+    var a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; 
+    return d;
+  }
+
   const budgetData = {
     'treks': { labels: ['Basecamp/Tents', 'Trail Rations', 'Transport/Guides', 'Permits'] },
     'bike': { labels: ['Stays & Motels', 'Roadhouse Meals', 'Bike Rental/Fuel', 'Tolls/Misc'] },
@@ -278,44 +293,49 @@ async function generateDashboard(plan) {
   };
   const bData = budgetData[plan.purpose] || budgetData['treks'];
   const baseCost = getBaseCost(plan.purpose);
-  let totalINR = baseCost * plan.days * plan.travelers;
+  let baseINR = baseCost * plan.days * plan.travelers;
   let expenses = [];
 
-  // SMART TRANSIT HEURISTIC: Check for specific Maharashtra routes
-  const isMahaOrigin = plan.origin.toLowerCase().includes('thane') || plan.origin.toLowerCase().includes('mumbai') || plan.origin.toLowerCase().includes('kalyan') || plan.origin.toLowerCase().includes('pune');
-  const isSahyadriTrek = plan.dest.toLowerCase().includes('kalsubai') || plan.dest.toLowerCase().includes('sandhan') || plan.dest.toLowerCase().includes('rajmachi') || plan.dest.toLowerCase().includes('harishchandragad');
+  const distance = getDistanceFromLatLonInKm(
+    parseFloat(plan.originLat || 19.0760), parseFloat(plan.originLon || 72.8777),
+    parseFloat(plan.lat), parseFloat(plan.lon)
+  );
 
-  if (isMahaOrigin && isSahyadriTrek) {
-    // Hyper-Local Ground Level Costing
-    const localTrain = 65 * plan.travelers;
-    const jeepShare = 150 * plan.travelers;
-    const villageStay = 500 * plan.days * plan.travelers;
-    const permit = 50 * plan.travelers;
-    totalINR = localTrain + jeepShare + villageStay + permit;
-    
-    expenses = [
-      { label: 'Local Train to Railhead', amount: localTrain * rate },
-      { label: 'Shared Jeep to Base Village', amount: jeepShare * rate },
-      { label: 'Village Homestay & Meals', amount: villageStay * rate },
-      { label: 'Forest Entry Permit', amount: permit * rate }
-    ];
-  } else if (plan.purpose === 'treks') {
-    // Generic Trek Logic
-    expenses = [
-      { label: 'Intercity Bus/Train', amount: (totalINR * 0.25) * rate },
-      { label: 'Basecamp/Tents', amount: (totalINR * 0.4) * rate },
-      { label: 'Trail Rations', amount: (totalINR * 0.25) * rate },
-      { label: 'Permits', amount: (totalINR * 0.1) * rate }
-    ];
+  let transportCost = 0;
+  let transportLabel = "Transport";
+  let lastMileCost = 0;
+  let lastMileLabel = "Last Mile / Cab";
+
+  if (distance < 150) {
+    // Hyper-local
+    transportLabel = "Local Train / Bus Route";
+    transportCost = (distance * 2) * plan.travelers;
+    lastMileLabel = "Shared Jeep / Auto to Base";
+    lastMileCost = 150 * plan.travelers;
+  } else if (distance >= 150 && distance < 1000) {
+    // Medium distance
+    transportLabel = "Intercity Sleeper / Express";
+    transportCost = (distance * 3.5) * plan.travelers;
+    lastMileLabel = "Station Taxi";
+    lastMileCost = 300 * plan.travelers;
   } else {
-    // Standard Generic Logic
-    expenses = [
-      { label: bData.labels[0], amount: (totalINR * 0.4) * rate },
-      { label: bData.labels[1], amount: (totalINR * 0.3) * rate },
-      { label: bData.labels[2], amount: (totalINR * 0.2) * rate },
-      { label: bData.labels[3], amount: (totalINR * 0.1) * rate }
-    ];
+    // Long distance
+    transportLabel = "Domestic Flight";
+    transportCost = (3000 + (distance * 2)) * plan.travelers;
+    lastMileLabel = "Airport Transfer";
+    lastMileCost = 800 * plan.travelers;
   }
+
+  // Calculate final totals
+  let remain = baseINR * 0.7; // remaining budget for stays/food
+  let totalINR = transportCost + lastMileCost + remain;
+  
+  expenses = [
+    { label: transportLabel, amount: transportCost * rate },
+    { label: lastMileLabel, amount: lastMileCost * rate },
+    { label: bData.labels[0] + ' / Stays', amount: (remain * 0.6) * rate },
+    { label: 'Food & Logistics', amount: (remain * 0.4) * rate }
+  ];
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
   budgetList.innerHTML = '';
@@ -521,3 +541,24 @@ function renderSavedTrips() {
     savedTripsList.appendChild(card);
   });
 }
+
+// --- PDF Export (Enterprise Feature) ---
+document.getElementById('btn-download-pdf').addEventListener('click', () => {
+  const element = document.getElementById('pdf-content');
+  const opt = {
+    margin:       0.5,
+    filename:     `Venture_Itinerary_${currentPlan.dest}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  const btn = document.getElementById('btn-download-pdf');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+  
+  html2pdf().set(opt).from(element).save().then(() => {
+    btn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+    setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+  });
+});
