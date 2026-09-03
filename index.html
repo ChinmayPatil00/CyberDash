@@ -3,205 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Venture 2.0 | Real-World SPA</title>
-  <link rel="stylesheet" href="style.css?v=20.0">
+  <title>Venture | Book Your Next Adventure</title>
+  
+  <!-- Fonts & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <link rel="stylesheet" href="style.css?v=40.0">
 </head>
 <body>
-  <!-- DYNAMIC FULL SCREEN BACKGROUND -->
-  <div id="app-bg"></div>
 
-  <!-- GLOBAL HEADER -->
-  <div class="container">
-    <header class="header">
+  <!-- GLOBAL NAV -->
+  <nav class="navbar">
+    <div class="nav-container">
       <a href="#" class="logo" id="nav-logo">
-        <div class="logo-icon"></div>
-        Venture
+        <i class="fas fa-paper-plane" style="color: var(--primary);"></i> Venture
       </a>
-      <div class="user-profile" id="user-profile" style="display:none;">
-        <div class="user-avatar"></div>
-        <span id="display-username">Pilot</span>
+      <div class="nav-links" id="nav-links" style="display:none;">
+        <button class="nav-btn" id="btn-my-trips"><i class="fas fa-suitcase"></i> My Trips</button>
+        <div class="user-profile">
+          <img src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" id="nav-avatar" alt="Avatar">
+          <span id="display-username" style="font-weight:600;">User</span>
+        </div>
       </div>
-    </header>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR: MY TRIPS -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="sidebar" id="trips-sidebar">
+    <div class="sidebar-header">
+      <h2>My Saved Trips</h2>
+      <button class="close-btn" id="close-sidebar"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sidebar-content" id="saved-trips-list">
+      <!-- Injected via JS -->
+    </div>
   </div>
 
-  <div class="container">
+  <div class="main-wrapper">
     
     <!-- VIEW 1: AUTHENTICATION -->
     <div id="view-auth" class="view active">
       <div class="auth-wrapper">
         <div class="auth-card">
-          <div style="font-size:3rem; margin-bottom:20px;">🚀</div>
-          <h2 style="margin-bottom:10px;">Welcome to Venture</h2>
-          <p style="color:var(--text-muted); font-size:0.9rem;">Enter your callsign to access the terminal.</p>
-          <input type="text" id="auth-username" placeholder="e.g. Maverick" autocomplete="off">
-          <button class="btn btn-primary" id="btn-login">Initialize System</button>
+          <div class="auth-icon"><i class="fas fa-compass"></i></div>
+          <h2>Welcome to Venture</h2>
+          <p>Sign in to start planning your next expedition.</p>
+          <input type="text" id="auth-username" placeholder="Enter your Name" autocomplete="off">
+          <button class="btn btn-primary" id="btn-login" style="width:100%; margin-top:15px;">Continue</button>
         </div>
       </div>
     </div>
 
     <!-- VIEW 2: THE EXPLORER (Trip Builder) -->
     <div id="view-home" class="view">
-      <div class="hero">
-        <h1>Where to next, <span id="hero-name" style="color:var(--primary);">Pilot</span>?</h1>
-        <p>Select your operational parameters below.</p>
-      </div>
+      
+      <!-- HERO SECTION -->
+      <div class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <h1>Find your next adventure, <span id="hero-name" style="color:var(--primary);">Explorer</span>.</h1>
+          <p>Discover treks, safaris, and epic road trips across India.</p>
+          
+          <!-- MAIN SEARCH FORM -->
+          <div class="search-card">
+            
+            <div class="vibe-tabs" id="vibe-selector">
+              <div class="vibe-tab active" data-vibe="treks"><i class="fas fa-mountain"></i> Treks</div>
+              <div class="vibe-tab" data-vibe="bike"><i class="fas fa-motorcycle"></i> Bikes</div>
+              <div class="vibe-tab" data-vibe="monsoon"><i class="fas fa-cloud-showers-heavy"></i> Monsoon</div>
+              <div class="vibe-tab" data-vibe="roadtrip"><i class="fas fa-car"></i> Drive</div>
+              <div class="vibe-tab" data-vibe="jungle"><i class="fas fa-paw"></i> Safari</div>
+            </div>
 
-      <!-- Vibe Grid -->
-      <div class="vibe-grid" id="vibe-selector">
-        <div class="vibe-card active" data-vibe="treks"><span class="vibe-icon">🏔️</span><div class="vibe-title">Treks</div></div>
-        <div class="vibe-card" data-vibe="bike"><span class="vibe-icon">🏍️</span><div class="vibe-title">Bike Rides</div></div>
-        <div class="vibe-card" data-vibe="monsoon"><span class="vibe-icon">🌧️</span><div class="vibe-title">Monsoon</div></div>
-        <div class="vibe-card" data-vibe="roadtrip"><span class="vibe-icon">🚗</span><div class="vibe-title">Roadtrips</div></div>
-        <div class="vibe-card" data-vibe="jungle"><span class="vibe-icon">🐅</span><div class="vibe-title">Safari</div></div>
-      </div>
-
-      <!-- Dynamic Suggestions Area -->
-      <div id="suggestions-area" style="display:none; margin-bottom: 20px;">
-        <h3 style="margin-bottom: 20px; font-size:1.2rem; display:flex; align-items:center; gap:10px;">🔥 Trending <span id="sug-label">Treks</span> in India</h3>
-        <div class="suggestions-scroll" id="suggestions-scroll"></div>
-      </div>
-
-      <!-- The Setup Form -->
-      <div class="setup-box">
-        <form id="trip-form">
-          <input type="hidden" id="input-purpose" value="treks">
-
-          <div class="form-row">
-            <div class="input-group">
-              <label>Origin Base</label>
-              <div class="autocomplete-wrapper">
-                <input type="text" id="input-origin" required placeholder="e.g. Mumbai" autocomplete="off">
-                <div id="autocomplete-list-origin" class="autocomplete-list"></div>
+            <form id="trip-form">
+              <input type="hidden" id="input-purpose" value="treks">
+              
+              <div class="search-row">
+                <div class="search-group">
+                  <label>Origin</label>
+                  <div class="autocomplete-wrapper">
+                    <input type="text" id="input-origin" required placeholder="Where from?" autocomplete="off">
+                    <div id="autocomplete-list-origin" class="autocomplete-list"></div>
+                  </div>
+                </div>
+                <div class="search-group">
+                  <label>Destination</label>
+                  <div class="autocomplete-wrapper">
+                    <input type="text" id="input-dest" required placeholder="Where to?" autocomplete="off">
+                    <div id="autocomplete-list-dest" class="autocomplete-list"></div>
+                  </div>
+                </div>
+                <div class="search-group">
+                  <label>Date</label>
+                  <input type="date" id="input-date" required>
+                </div>
+                <div class="search-group">
+                  <label>Currency</label>
+                  <select id="input-currency" required>
+                    <option value="INR">INR (₹)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div class="input-group">
-              <label>Destination Dropzone</label>
-              <div class="autocomplete-wrapper">
-                <input type="text" id="input-dest" required placeholder="e.g. Kalsubai Peak" autocomplete="off">
-                <div id="autocomplete-list-dest" class="autocomplete-list"></div>
+
+              <div class="search-row sliders">
+                <div class="search-group">
+                  <label>Duration: <span id="val-days" style="color:var(--primary);">2 Days</span></label>
+                  <input type="range" id="input-days" min="1" max="30" value="2" required>
+                </div>
+                <div class="search-group">
+                  <label>Travelers: <span id="val-travelers" style="color:var(--primary);">4 People</span></label>
+                  <input type="range" id="input-travelers" min="1" max="20" value="4" required>
+                </div>
+                <div class="search-group estimate-group">
+                  <div class="est-label">Estimated Total</div>
+                  <div class="est-val" id="live-cost">₹0</div>
+                </div>
+                <div class="search-group">
+                  <button type="submit" class="btn btn-primary btn-search" id="btn-submit">
+                    <span id="btn-submit-text">Search</span>
+                    <i class="fas fa-spinner fa-spin" id="btn-submit-spinner" style="display:none;"></i>
+                  </button>
+                </div>
               </div>
-            </div>
+
+            </form>
           </div>
 
-          <div class="form-row">
-            <div class="input-group">
-              <label>Launch Date</label>
-              <input type="date" id="input-date" required>
-            </div>
-            <div class="input-group">
-              <label>Currency</label>
-              <select id="input-currency" required>
-                <option value="INR">INR (₹)</option>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="input-group">
-              <label>Duration: <span id="val-days" style="color:var(--text-main);">2 Days</span></label>
-              <input type="range" id="input-days" min="1" max="30" value="2" required>
-            </div>
-            <div class="input-group">
-              <label>Squad Size: <span id="val-travelers" style="color:var(--text-main);">4 People</span></label>
-              <input type="range" id="input-travelers" min="1" max="20" value="4" required>
-            </div>
-          </div>
-
-          <div style="text-align:center; padding: 20px; border-radius:8px; border: 1px solid var(--border); margin-bottom: 20px; background:var(--bg-main);">
-            <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.1em;">Live Cost Estimate</div>
-            <div id="live-cost" style="font-size:2rem; font-weight:900; color:var(--primary); margin-top:5px;">₹0</div>
-          </div>
-
-          <button type="submit" class="btn btn-primary" style="font-size:1.2rem; padding: 20px;">Deploy Mission 🚀</button>
-        </form>
+        </div>
       </div>
+
+      <!-- TRENDING CAROUSEL -->
+      <div class="content-container">
+        <div id="suggestions-area" style="display:none; margin-top:40px;">
+          <h2 class="section-title">Trending <span id="sug-label">Treks</span></h2>
+          <div class="carousel-container" id="suggestions-scroll">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- VIEW 3: MISSION DASHBOARD -->
     <div id="view-dashboard" class="view">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-        <div>
-          <h1 style="font-size:2.5rem; margin-bottom:5px;">Operation: <span id="dash-dest" style="color:var(--primary);">Destination</span></h1>
-          <p style="color:var(--text-muted);">Originating from <span id="dash-origin" style="color:#fff;">Origin</span> • <span id="dash-days" style="color:#fff;">X</span> Days • <span id="dash-squad" style="color:#fff;">Y</span> Personnel</p>
-        </div>
-        <button class="btn" id="btn-edit" style="width:auto; margin:0;">Edit Parameters</button>
-      </div>
-
-      <div class="dashboard-grid">
-        
-        <!-- Left Column: Itinerary & Weather -->
-        <div>
-          <div class="dash-panel" style="background: rgba(0,0,0,0.4); border-color: var(--primary);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div style="font-size:0.8rem; color:var(--primary); text-transform:uppercase; font-weight:700; letter-spacing:0.1em; margin-bottom:5px;">Live Weather Uplink</div>
-                <div id="dash-weather-desc" style="font-size:1.5rem; font-weight:900; color:#fff;">Fetching...</div>
-              </div>
-              <div id="dash-weather-temp" style="font-size:3rem; font-weight:900; color:var(--primary);">--°C</div>
+      
+      <!-- Dashboard Hero -->
+      <div class="dash-hero" id="dash-hero-bg">
+        <div class="dash-hero-overlay">
+          <div class="content-container">
+            <h1 id="dash-dest">Destination</h1>
+            <p><i class="fas fa-map-marker-alt"></i> <span id="dash-origin">Origin</span> &nbsp;|&nbsp; <i class="far fa-calendar"></i> <span id="dash-date">Date</span> &nbsp;|&nbsp; <i class="fas fa-users"></i> <span id="dash-squad">Squad</span></p>
+            <div class="dash-actions">
+              <button class="btn btn-light" id="btn-edit"><i class="fas fa-arrow-left"></i> Back to Search</button>
+              <button class="btn btn-primary" id="btn-save-trip"><i class="fas fa-heart"></i> Save Trip</button>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="dash-panel">
-            <div class="panel-title">
-              <span><i class="fas fa-route" style="margin-right:10px; color:var(--primary);"></i>Mission Timeline</span>
+      <div class="content-container dash-grid">
+        
+        <!-- Left Column -->
+        <div class="dash-left">
+          
+          <!-- MAP PANEL -->
+          <div class="dash-card">
+            <h3><i class="fas fa-map"></i> Interactive Map</h3>
+            <div id="map" style="height: 300px; border-radius: 8px; z-index:1;"></div>
+          </div>
+
+          <!-- WEATHER PANEL -->
+          <div class="dash-card weather-card">
+            <div class="w-info">
+              <span class="w-label">Live Conditions</span>
+              <span class="w-desc" id="dash-weather-desc">Fetching...</span>
             </div>
-            <div id="itinerary-timeline">
+            <div class="w-temp" id="dash-weather-temp">--°C</div>
+          </div>
+
+          <!-- ITINERARY PANEL -->
+          <div class="dash-card">
+            <h3><i class="fas fa-route"></i> Itinerary</h3>
+            <div id="itinerary-timeline" class="timeline">
               <!-- Rendered via JS -->
             </div>
           </div>
+
         </div>
 
-        <!-- Right Column: Budget & Gear -->
-        <div>
-          <div class="dash-panel">
-            <div class="panel-title">
-              <span><i class="fas fa-wallet" style="margin-right:10px; color:var(--primary);"></i>Financial Breakdown</span>
-            </div>
+        <!-- Right Column -->
+        <div class="dash-right">
+          
+          <!-- BUDGET PANEL -->
+          <div class="dash-card">
+            <h3><i class="fas fa-wallet"></i> Price Breakdown</h3>
             <ul class="budget-list" id="budget-list">
               <!-- Rendered via JS -->
             </ul>
-            <div class="budget-total" id="budget-total">₹0</div>
+            <div class="budget-total-box">
+              <span>Total</span>
+              <span id="budget-total" class="b-total-val">₹0</span>
+            </div>
           </div>
 
-          <div class="dash-panel">
-            <div class="panel-title">
-              <span><i class="fas fa-box" style="margin-right:10px; color:var(--primary);"></i>Survival Loadout</span>
-            </div>
+          <!-- GEAR PANEL -->
+          <div class="dash-card">
+            <h3><i class="fas fa-backpack"></i> Required Gear</h3>
             <ul class="gear-list" id="gear-list">
               <!-- Rendered via JS -->
             </ul>
           </div>
+
         </div>
-
       </div>
     </div>
 
   </div>
 
-  <!-- MISSION MODAL (Hidden by default) -->
-  <div class="modal-overlay" id="mission-modal">
-    <div class="modal-content">
-      <div class="modal-close" id="modal-close"><i class="fas fa-times"></i></div>
-      <div class="modal-title" id="m-title">Mission Title</div>
-      <div style="color:var(--primary); font-weight:700; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em;" id="m-region">Region</div>
-      <img id="m-img" class="modal-image" src="" alt="Loading...">
-      <div class="modal-desc" id="m-desc">Establishing uplink to Wikipedia for mission briefing...</div>
-      
-      <div class="modal-stats">
-        <div class="modal-stat-box">🔥 Difficulty<br><span id="m-diff" style="color:var(--primary); font-size:1.2rem; font-weight:900;">Hard</span></div>
-        <div class="modal-stat-box">⏱️ Duration<br><span id="m-days" style="color:#fff; font-size:1.2rem; font-weight:900;">2 Days</span></div>
-        <div class="modal-stat-box">⛺ Basecamp<br><span id="m-base" style="color:#fff; font-size:1.2rem; font-weight:900;">Bari</span></div>
-        <div class="modal-stat-box">💸 Est. Cost<br><span id="m-cost" style="color:#fff; font-size:1.2rem; font-weight:900;">₹3000</span></div>
-      </div>
-
-      <button class="btn btn-primary" id="m-select-btn" style="padding:15px; font-size:1.1rem;">Select This Mission 🚀</button>
-    </div>
-  </div>
-
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
   <script src="app.js"></script>
 </body>
 </html>
