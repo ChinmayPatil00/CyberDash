@@ -223,6 +223,21 @@ document.getElementById('trip-form').addEventListener('submit', async (e) => {
   btnSubmitSpinner.style.display = 'none';
   
   switchView('view-dashboard');
+
+  // QA FIX: Map must initialize AFTER view transition to correctly size itself
+  setTimeout(() => {
+    if (leafletMap) {
+      leafletMap.remove();
+    }
+    leafletMap = L.map('map').setView([currentPlan.lat, currentPlan.lon], 10);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(leafletMap);
+    L.marker([currentPlan.lat, currentPlan.lon]).addTo(leafletMap)
+      .bindPopup(`<b>${currentPlan.dest}</b><br>Mission Coordinates`).openPopup();
+    
+    leafletMap.invalidateSize();
+  }, 300);
 });
 
 document.getElementById('btn-edit').addEventListener('click', () => {
@@ -253,6 +268,7 @@ async function generateDashboard(plan) {
     } catch(e) { console.error('Currency API offline'); rate = { 'USD': 0.012, 'EUR': 0.011, 'GBP': 0.0095 }[plan.currency] || 1.0; }
   }
 
+  // --- 1. Hyper-Local Budget & Transit Engine ---
   const budgetData = {
     'treks': { labels: ['Basecamp/Tents', 'Trail Rations', 'Transport/Guides', 'Permits'] },
     'bike': { labels: ['Stays & Motels', 'Roadhouse Meals', 'Bike Rental/Fuel', 'Tolls/Misc'] },
@@ -262,14 +278,44 @@ async function generateDashboard(plan) {
   };
   const bData = budgetData[plan.purpose] || budgetData['treks'];
   const baseCost = getBaseCost(plan.purpose);
-  const totalINR = baseCost * plan.days * plan.travelers;
-  
-  const expenses = [
-    { label: bData.labels[0], amount: (totalINR * 0.4) * rate },
-    { label: bData.labels[1], amount: (totalINR * 0.3) * rate },
-    { label: bData.labels[2], amount: (totalINR * 0.2) * rate },
-    { label: bData.labels[3], amount: (totalINR * 0.1) * rate }
-  ];
+  let totalINR = baseCost * plan.days * plan.travelers;
+  let expenses = [];
+
+  // SMART TRANSIT HEURISTIC: Check for specific Maharashtra routes
+  const isMahaOrigin = plan.origin.toLowerCase().includes('thane') || plan.origin.toLowerCase().includes('mumbai') || plan.origin.toLowerCase().includes('kalyan') || plan.origin.toLowerCase().includes('pune');
+  const isSahyadriTrek = plan.dest.toLowerCase().includes('kalsubai') || plan.dest.toLowerCase().includes('sandhan') || plan.dest.toLowerCase().includes('rajmachi') || plan.dest.toLowerCase().includes('harishchandragad');
+
+  if (isMahaOrigin && isSahyadriTrek) {
+    // Hyper-Local Ground Level Costing
+    const localTrain = 65 * plan.travelers;
+    const jeepShare = 150 * plan.travelers;
+    const villageStay = 500 * plan.days * plan.travelers;
+    const permit = 50 * plan.travelers;
+    totalINR = localTrain + jeepShare + villageStay + permit;
+    
+    expenses = [
+      { label: 'Local Train to Railhead', amount: localTrain * rate },
+      { label: 'Shared Jeep to Base Village', amount: jeepShare * rate },
+      { label: 'Village Homestay & Meals', amount: villageStay * rate },
+      { label: 'Forest Entry Permit', amount: permit * rate }
+    ];
+  } else if (plan.purpose === 'treks') {
+    // Generic Trek Logic
+    expenses = [
+      { label: 'Intercity Bus/Train', amount: (totalINR * 0.25) * rate },
+      { label: 'Basecamp/Tents', amount: (totalINR * 0.4) * rate },
+      { label: 'Trail Rations', amount: (totalINR * 0.25) * rate },
+      { label: 'Permits', amount: (totalINR * 0.1) * rate }
+    ];
+  } else {
+    // Standard Generic Logic
+    expenses = [
+      { label: bData.labels[0], amount: (totalINR * 0.4) * rate },
+      { label: bData.labels[1], amount: (totalINR * 0.3) * rate },
+      { label: bData.labels[2], amount: (totalINR * 0.2) * rate },
+      { label: bData.labels[3], amount: (totalINR * 0.1) * rate }
+    ];
+  }
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
   budgetList.innerHTML = '';
@@ -282,19 +328,6 @@ async function generateDashboard(plan) {
     `;
   });
   document.getElementById('budget-total').innerText = formatter.format(totalINR * rate);
-
-  // 2. Leaflet Map
-  if (leafletMap) {
-    leafletMap.remove();
-  }
-  leafletMap = L.map('map').setView([plan.lat, plan.lon], 10);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
-  }).addTo(leafletMap);
-  L.marker([plan.lat, plan.lon]).addTo(leafletMap)
-    .bindPopup(`<b>${plan.dest}</b><br>Mission Coordinates`).openPopup();
-  
-  setTimeout(() => { leafletMap.invalidateSize(); }, 500);
 
   // 3. Live Weather API & Dynamic Gear
   let temp = 25;
@@ -352,7 +385,8 @@ async function generateDashboard(plan) {
     'jungle': { search: 'national parks and wildlife', start: 'Meet your local ranger.', end: 'Emerge from the dense foliage.' }
   };
   const rData = routeData[plan.purpose] || routeData['treks'];
-  const searchStr = `${rData.search} in ${plan.dest}`;
+  // QA FIX: Search exactly for the destination instead of appending generic strings
+  const searchStr = `${plan.dest}`;
   const attractionsUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=10&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=1200&exsentences=3&exintro=1&explaintext=1&format=json&origin=*`;
 
   try {
@@ -365,7 +399,17 @@ async function generateDashboard(plan) {
       const bestImagePlace = places.find(p => p.thumbnail && p.thumbnail.source);
       if(bestImagePlace) {
         document.getElementById('dash-hero-bg').style.backgroundImage = `url('${bestImagePlace.thumbnail.source}')`;
+      } else {
+        // High quality fallback
+        const fallbacks = [
+          'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2000&auto=format&fit=crop'
+        ];
+        document.getElementById('dash-hero-bg').style.backgroundImage = `url('${fallbacks[Math.floor(Math.random() * fallbacks.length)]}')`;
       }
+    } else {
+       document.getElementById('dash-hero-bg').style.backgroundImage = "url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2000&auto=format&fit=crop')";
     }
     
     timeline.innerHTML = '';
