@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+  <!-- DYNAMIC FULL SCREEN BACKGROUND -->
+  <div id="app-bg"></div>
 
   <!-- GLOBAL HEADER -->
   <div class="container">
@@ -131,8 +133,18 @@
 
       <div class="dashboard-grid">
         
-        <!-- Left Column: Itinerary -->
+        <!-- Left Column: Itinerary & Weather -->
         <div>
+          <div class="dash-panel" style="background: rgba(0,0,0,0.4); border-color: var(--primary);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:0.8rem; color:var(--primary); text-transform:uppercase; font-weight:700; letter-spacing:0.1em; margin-bottom:5px;">Live Weather Uplink</div>
+                <div id="dash-weather-desc" style="font-size:1.5rem; font-weight:900; color:#fff;">Fetching...</div>
+              </div>
+              <div id="dash-weather-temp" style="font-size:3rem; font-weight:900; color:var(--primary);">--°C</div>
+            </div>
+          </div>
+
           <div class="dash-panel">
             <div class="panel-title">
               <span><i class="fas fa-route" style="margin-right:10px; color:var(--primary);"></i>Mission Timeline</span>

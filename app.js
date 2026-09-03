@@ -221,7 +221,12 @@ function setupAutocomplete(inputId, listId) {
               const div = document.createElement('div');
               div.className = 'autocomplete-item';
               div.innerText = item.display_name;
-              div.addEventListener('click', () => { input.value = item.display_name.split(',')[0]; list.style.display = 'none'; });
+              div.addEventListener('click', () => { 
+                input.value = item.display_name.split(',')[0];
+                input.dataset.lat = item.lat;
+                input.dataset.lon = item.lon;
+                list.style.display = 'none'; 
+              });
               list.appendChild(div);
             });
           } else { list.style.display = 'none'; }
@@ -240,6 +245,8 @@ document.getElementById('trip-form').addEventListener('submit', (e) => {
   const plan = {
     origin: inOrigin.value,
     dest: inDest.value,
+    lat: inDest.dataset.lat || '19.0760', // fallback to Mumbai if not set
+    lon: inDest.dataset.lon || '72.8777',
     date: document.getElementById('input-date').value,
     currency: currencySelect.value,
     days: parseInt(daysSlider.value, 10),
@@ -254,17 +261,35 @@ document.getElementById('trip-form').addEventListener('submit', (e) => {
 // Edit Button
 document.getElementById('btn-edit').addEventListener('click', () => {
   switchView('view-home');
+  document.getElementById('app-bg').style.backgroundImage = "url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2000&auto=format&fit=crop')";
 });
 
 // --- Dashboard Engine ---
-function generateDashboard(plan) {
+async function generateDashboard(plan) {
   document.getElementById('dash-dest').innerText = plan.dest;
   document.getElementById('dash-origin').innerText = plan.origin;
   document.getElementById('dash-days').innerText = plan.days;
   document.getElementById('dash-squad').innerText = plan.travelers;
-
-  // 1. Budget Generation
   const budgetList = document.getElementById('budget-list');
+  const gearList = document.getElementById('gear-list');
+  const timeline = document.getElementById('itinerary-timeline');
+
+  budgetList.innerHTML = '<li class="budget-item">Syncing Live Global Currency Markets...</li>';
+  gearList.innerHTML = '<li class="gear-item">Connecting to Weather Satellites...</li>';
+  timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-satellite-dish fa-spin" style="margin-right:10px;"></i> Establishing uplink with geo-satellites...</div>';
+
+  // --- 1. Live Currency API ---
+  let rate = 1.0;
+  if(plan.currency !== 'INR') {
+    try {
+      const exRes = await fetch('https://open.er-api.com/v6/latest/INR');
+      const exData = await exRes.json();
+      if(exData && exData.rates && exData.rates[plan.currency]) {
+        rate = exData.rates[plan.currency];
+      }
+    } catch(e) { console.error('Currency API offline'); rate = { 'USD': 0.012, 'EUR': 0.011, 'GBP': 0.0095 }[plan.currency] || 1.0; }
+  }
+
   const budgetData = {
     'treks': { labels: ['Basecamp/Tents', 'Trail Rations', 'Transport/Guides', 'Permits'] },
     'bike': { labels: ['Stays & Motels', 'Roadhouse Meals', 'Bike Rental/Fuel', 'Tolls/Misc'] },
@@ -274,19 +299,13 @@ function generateDashboard(plan) {
   };
   const bData = budgetData[plan.purpose] || budgetData['treks'];
   const baseCost = getBaseCost(plan.purpose);
-  const rate = { 'USD': 0.012, 'EUR': 0.011, 'GBP': 0.0095, 'INR': 1.0 }[plan.currency] || 1.0;
-  
   const totalINR = baseCost * plan.days * plan.travelers;
-  const cost1 = (totalINR * 0.4) * rate;
-  const cost2 = (totalINR * 0.3) * rate;
-  const cost3 = (totalINR * 0.2) * rate;
-  const cost4 = (totalINR * 0.1) * rate;
-
+  
   const expenses = [
-    { label: bData.labels[0], amount: cost1 },
-    { label: bData.labels[1], amount: cost2 },
-    { label: bData.labels[2], amount: cost3 },
-    { label: bData.labels[3], amount: cost4 }
+    { label: bData.labels[0], amount: (totalINR * 0.4) * rate },
+    { label: bData.labels[1], amount: (totalINR * 0.3) * rate },
+    { label: bData.labels[2], amount: (totalINR * 0.2) * rate },
+    { label: bData.labels[3], amount: (totalINR * 0.1) * rate }
   ];
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
@@ -301,25 +320,61 @@ function generateDashboard(plan) {
   });
   document.getElementById('budget-total').innerText = formatter.format(totalINR * rate);
 
-  // 2. Gear Generation
+  // --- 2. Live Weather API (Open-Meteo) & Dynamic Gear ---
+  let temp = 25;
+  let isRaining = false;
+  let windSpeed = 0;
+  
+  try {
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${plan.lat}&longitude=${plan.lon}&current_weather=true`;
+    const weatherRes = await fetch(weatherUrl);
+    const wData = await weatherRes.json();
+    if(wData && wData.current_weather) {
+      temp = wData.current_weather.temperature;
+      windSpeed = wData.current_weather.windspeed;
+      const wcode = wData.current_weather.weathercode;
+      // WMO codes > 50 generally mean rain/drizzle/snow
+      if(wcode >= 51) isRaining = true;
+      
+      document.getElementById('dash-weather-temp').innerText = `${temp}°C`;
+      document.getElementById('dash-weather-desc').innerText = isRaining ? 'Precipitation Detected' : 'Clear / Cloudy';
+    }
+  } catch(e) {
+    document.getElementById('dash-weather-temp').innerText = '--°C';
+    document.getElementById('dash-weather-desc').innerText = 'Sensor Offline';
+  }
+
   const gearMap = {
-    'treks': ['65L Rucksack', 'Trekking Poles', 'Thermal Base Layers', 'First Aid Kit', 'Water Purifier', 'Headlamp'],
-    'bike': ['Riding Jacket', 'Full-face Helmet', 'Bungee Cords', 'Tool Kit', 'Thermal Wear', 'Hydration Pack'],
-    'monsoon': ['Waterproof Poncho', 'Dry Bags', 'Trekking Shoes', 'Anti-leech Socks', 'Umbrella'],
-    'roadtrip': ['Aux Cable', 'Neck Pillows', 'Car Charger', 'Snack Cooler', 'Emergency Toolkit'],
-    'jungle': ['Binoculars', 'Camouflage Clothing', 'Mosquito Repellent', 'DSLR Camera', 'Safari Hat']
+    'treks': ['65L Rucksack', 'First Aid Kit', 'Water Purifier', 'Headlamp'],
+    'bike': ['Riding Jacket', 'Full-face Helmet', 'Tool Kit', 'Hydration Pack'],
+    'monsoon': ['Trekking Shoes', 'Anti-leech Socks'],
+    'roadtrip': ['Aux Cable', 'Car Charger', 'Snack Cooler', 'Emergency Toolkit'],
+    'jungle': ['Binoculars', 'Camouflage Clothing', 'Mosquito Repellent', 'Safari Hat']
   };
-  const gear = gearMap[plan.purpose] || gearMap['treks'];
-  const gearList = document.getElementById('gear-list');
-  gearList.innerHTML = '';
-  gear.forEach(item => {
-    gearList.innerHTML += `<li class="gear-item"><input type="checkbox"> ${item}</li>`;
+  
+  let finalGear = gearMap[plan.purpose] || gearMap['treks'];
+  let dynamicGearHtml = '';
+
+  finalGear.forEach(item => {
+    dynamicGearHtml += `<li class="gear-item"><input type="checkbox" checked> <span>${item}</span> <span class="reason">Base</span></li>`;
   });
 
-  // 3. Itinerary Generation
-  const timeline = document.getElementById('itinerary-timeline');
-  timeline.innerHTML = '<div style="color:var(--text-muted);"><i class="fas fa-satellite-dish fa-spin" style="margin-right:10px;"></i> Establishing uplink with geo-satellites...</div>';
+  // Dynamic Injections based on Live Weather
+  if(temp < 15) {
+    dynamicGearHtml += `<li class="gear-item"><input type="checkbox" checked> <span>Thermal Base Layers</span> <span class="reason" style="color:#00E5FF;">Temp &lt; 15°C</span></li>`;
+    dynamicGearHtml += `<li class="gear-item"><input type="checkbox" checked> <span>Insulated Jacket</span> <span class="reason" style="color:#00E5FF;">Temp &lt; 15°C</span></li>`;
+  }
+  if(isRaining) {
+    dynamicGearHtml += `<li class="gear-item"><input type="checkbox" checked> <span>Waterproof Poncho</span> <span class="reason" style="color:#B388FF;">Precipitation</span></li>`;
+    dynamicGearHtml += `<li class="gear-item"><input type="checkbox" checked> <span>Dry Bags</span> <span class="reason" style="color:#B388FF;">Precipitation</span></li>`;
+  }
+  if(windSpeed > 20) {
+    dynamicGearHtml += `<li class="gear-item"><input type="checkbox" checked> <span>Windcheater</span> <span class="reason" style="color:#FFB300;">High Wind</span></li>`;
+  }
   
+  gearList.innerHTML = dynamicGearHtml;
+
+  // --- 3. Itinerary Generation & Immersive Background ---
   const routeData = {
     'treks': { search: 'mountains and hiking trails', start: 'Hit the trailhead basecamp. Do a quick fit check, secure the bags, and get moving.', end: 'Summit achieved. Catch your breath, snap the pics, and hike out.' },
     'bike': { search: 'scenic motorcycle routes', start: 'Grab the bikes. Check tire pressure, top up the fuel, and hit the open highway.', end: 'Return the motorcycles. Clean off the road dust and head out.' },
@@ -329,13 +384,22 @@ function generateDashboard(plan) {
   };
   const rData = routeData[plan.purpose] || routeData['treks'];
   const searchStr = `${rData.search} in ${plan.dest}`;
-  const attractionsUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=10&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=600&exsentences=3&exintro=1&explaintext=1&format=json&origin=*`;
+  const attractionsUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=10&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=1200&exsentences=3&exintro=1&explaintext=1&format=json&origin=*`;
 
-  fetch(attractionsUrl).then(res => res.json()).then(data => {
+  try {
+    const wikiRes = await fetch(attractionsUrl);
+    const wikiData = await wikiRes.json();
     let places = [];
-    if (data.query && data.query.pages) {
-      places = Object.values(data.query.pages).filter(p => !p.title.includes('List of') && p.extract);
+    if (wikiData.query && wikiData.query.pages) {
+      places = Object.values(wikiData.query.pages).filter(p => !p.title.includes('List of') && p.extract);
+      
+      // Immersive Full Screen Background injection!
+      const bestImagePlace = places.find(p => p.thumbnail && p.thumbnail.source);
+      if(bestImagePlace) {
+        document.getElementById('app-bg').style.backgroundImage = `url('${bestImagePlace.thumbnail.source}')`;
+      }
     }
+    
     timeline.innerHTML = '';
     let pIndex = 0;
 
@@ -370,7 +434,7 @@ function generateDashboard(plan) {
         </div>
       `;
     }
-  }).catch(() => {
+  } catch(e) {
     timeline.innerHTML = '<div style="color:var(--primary);">No signal. Proceed using offline maps.</div>';
-  });
+  }
 }
