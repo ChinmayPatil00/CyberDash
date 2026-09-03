@@ -70,10 +70,7 @@ const sugLabel = document.getElementById('sug-label');
 const inOrigin = document.getElementById('input-origin');
 const inDest = document.getElementById('input-dest');
 const inputDate = document.getElementById('input-date');
-const daysSlider = document.getElementById('input-days');
-const daysVal = document.getElementById('val-days');
-const travelersSlider = document.getElementById('input-travelers');
-const travelersVal = document.getElementById('val-travelers');
+
 const currencySelect = document.getElementById('input-currency');
 
 // QA: Set Date Min to Today
@@ -105,8 +102,8 @@ function renderSuggestions(vibe) {
     card.addEventListener('click', () => {
       inOrigin.value = item.base;
       inDest.value = item.dest;
-      daysSlider.value = item.days;
-      daysVal.innerText = `${item.days} Days`;
+      tripDays = item.days;
+      valDays.innerText = tripDays;
       purposeInput.value = vibe;
       updateLiveEstimate();
       window.scrollTo(0, document.querySelector('.search-card').offsetTop - 100);
@@ -128,31 +125,69 @@ vibeTabs.forEach(tab => {
 
 renderSuggestions('treks');
 
-daysSlider.addEventListener('input', (e) => { daysVal.innerText = `${e.target.value} Days`; updateLiveEstimate(); });
-travelersSlider.addEventListener('input', (e) => { travelersVal.innerText = `${e.target.value} People`; updateLiveEstimate(); });
+let tripDays = 2;
+let tripTravelers = 4;
+
+const valDays = document.getElementById('val-days');
+const valTravelers = document.getElementById('val-travelers');
+
+document.getElementById('btn-dec-days').addEventListener('click', () => { if(tripDays > 1) { tripDays--; valDays.innerText = tripDays; updateLiveEstimate(); } });
+document.getElementById('btn-inc-days').addEventListener('click', () => { if(tripDays < 60) { tripDays++; valDays.innerText = tripDays; updateLiveEstimate(); } });
+document.getElementById('btn-dec-travelers').addEventListener('click', () => { if(tripTravelers > 1) { tripTravelers--; valTravelers.innerText = tripTravelers; updateLiveEstimate(); } });
+document.getElementById('btn-inc-travelers').addEventListener('click', () => { if(tripTravelers < 20) { tripTravelers++; valTravelers.innerText = tripTravelers; updateLiveEstimate(); } });
+
 currencySelect.addEventListener('change', updateLiveEstimate);
+document.getElementById('input-transport').addEventListener('change', updateLiveEstimate);
 
 function getBaseCost(purpose) {
   const budgetData = { 'treks': 1200, 'bike': 3500, 'monsoon': 1500, 'roadtrip': 2500, 'jungle': 4000 };
   return budgetData[purpose] || 1500;
 }
 
+// Reuse Haversine for live estimate calculation
+function getDist(lat1, lon1, lat2, lon2) {
+  var R = 6371;
+  var dLat = (lat2 - lat1) * (Math.PI/180);
+  var dLon = (lon2 - lon1) * (Math.PI/180); 
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c; 
+}
+
 function updateLiveEstimate() {
-  const days = parseInt(daysSlider.value, 10);
-  const travelers = parseInt(travelersSlider.value, 10);
   const purpose = purposeInput.value;
   const currency = currencySelect.value;
   const rate = { 'USD': 0.012, 'EUR': 0.011, 'GBP': 0.0095, 'INR': 1.0 }[currency] || 1.0;
   
-  const totalINR = getBaseCost(purpose) * days * travelers;
-  const finalCost = totalINR * rate;
+  let baseINR = getBaseCost(purpose) * tripDays * tripTravelers;
+  let transportCost = 0;
+  
+  const oLat = inOrigin.dataset.lat; const oLon = inOrigin.dataset.lon;
+  const dLat = inDest.dataset.lat; const dLon = inDest.dataset.lon;
+  
+  if (oLat && dLat) {
+    const dist = getDist(oLat, oLon, dLat, dLon);
+    let tMode = document.getElementById('input-transport').value;
+    
+    if (tMode === 'auto') {
+      if (dist > 1000) tMode = 'flight';
+      else if (dist > 150) tMode = 'train';
+      else tMode = 'drive';
+    }
+    
+    if (tMode === 'flight') transportCost = (3000 + (dist * 2)) * tripTravelers + (800 * tripTravelers);
+    else if (tMode === 'train') transportCost = (dist * 3.5) * tripTravelers + (300 * tripTravelers);
+    else transportCost = (dist * 2) * tripTravelers + (150 * tripTravelers);
+  }
+  
+  const finalCost = (baseINR + transportCost) * rate;
   
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency, maximumFractionDigits: 0 });
   document.getElementById('live-cost').innerText = formatter.format(finalCost);
 }
 updateLiveEstimate();
 
-// Autocomplete
+// Autocomplete & Smart Calculation
 function setupAutocomplete(inputId, listId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
@@ -176,6 +211,28 @@ function setupAutocomplete(inputId, listId) {
                 input.dataset.lat = item.lat;
                 input.dataset.lon = item.lon;
                 list.style.display = 'none'; 
+                
+                // Smart Calculation logic
+                if (inputId === 'input-dest' && inOrigin.dataset.lat) {
+                  const dist = getDist(inOrigin.dataset.lat, inOrigin.dataset.lon, item.lat, item.lon);
+                  const transportSel = document.getElementById('input-transport');
+                  
+                  // Suggest Transport
+                  if (dist > 1000) { transportSel.value = 'flight'; }
+                  else if (dist > 150) { transportSel.value = 'train'; }
+                  else { transportSel.value = 'drive'; }
+                  
+                  // Suggest Days
+                  let minDays = 1; // base adventure day
+                  if (dist > 1000) minDays += 2; // flight travel time (round trip)
+                  else if (dist > 500) minDays += 4; // long train time
+                  else if (dist > 150) minDays += 2; // train/drive time
+                  
+                  tripDays = minDays;
+                  valDays.innerText = tripDays;
+                  document.getElementById('days-sub').innerText = `Auto-calc (${Math.round(dist)}km)`;
+                }
+                updateLiveEstimate();
               });
               list.appendChild(div);
             });
@@ -212,8 +269,8 @@ document.getElementById('trip-form').addEventListener('submit', async (e) => {
     lon: inDest.dataset.lon || '72.8777',
     date: inputDate.value,
     currency: currencySelect.value,
-    days: parseInt(daysSlider.value, 10),
-    travelers: parseInt(travelersSlider.value, 10),
+    days: tripDays,
+    travelers: tripTravelers,
     purpose: purposeInput.value,
     id: Date.now().toString()
   };
@@ -232,8 +289,8 @@ document.getElementById('trip-form').addEventListener('submit', async (e) => {
       leafletMap.remove();
     }
     leafletMap = L.map('map').setView([currentPlan.lat, currentPlan.lon], 10);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap'
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(leafletMap);
     L.marker([currentPlan.lat, currentPlan.lon]).addTo(leafletMap)
       .bindPopup(`<b>${currentPlan.dest}</b><br>Mission Coordinates`).openPopup();

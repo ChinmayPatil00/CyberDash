@@ -86,57 +86,91 @@
             <form id="trip-form">
               <input type="hidden" id="input-purpose" value="treks">
               
-              <div class="search-row">
-                <div class="search-group">
-                  <label>Origin</label>
+              <div class="search-pill">
+                
+                <!-- Origin -->
+                <div class="pill-group" style="flex: 1.5;">
+                  <label>Where from?</label>
                   <div class="autocomplete-wrapper">
-                    <input type="text" id="input-origin" required placeholder="Where from?" autocomplete="off" data-lat="19.2183" data-lon="72.9781">
+                    <input type="text" id="input-origin" required placeholder="Search destinations" autocomplete="off" data-lat="19.2183" data-lon="72.9781">
                     <div id="autocomplete-list-origin" class="autocomplete-list"></div>
                   </div>
                 </div>
-                <div class="search-group">
-                  <label>Destination</label>
+
+                <div class="pill-divider"></div>
+
+                <!-- Destination -->
+                <div class="pill-group" style="flex: 1.5;">
+                  <label>Where to?</label>
                   <div class="autocomplete-wrapper">
-                    <input type="text" id="input-dest" required placeholder="Where to?" autocomplete="off">
+                    <input type="text" id="input-dest" required placeholder="Search destinations" autocomplete="off">
                     <div id="autocomplete-list-dest" class="autocomplete-list"></div>
                   </div>
                 </div>
-                <div class="search-group">
-                  <label>Date</label>
+
+                <div class="pill-divider"></div>
+
+                <!-- Date -->
+                <div class="pill-group" style="flex: 1;">
+                  <label>Launch Date</label>
                   <input type="date" id="input-date" required>
                 </div>
-                <div class="search-group">
-                  <label>Currency</label>
-                  <select id="input-currency" required>
-                    <option value="INR">INR (₹)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
+
+                <div class="pill-divider"></div>
+
+                <!-- Transport (New) -->
+                <div class="pill-group" style="flex: 1;">
+                  <label>Transport</label>
+                  <select id="input-transport" required>
+                    <option value="auto">Auto-Select</option>
+                    <option value="flight">Flight</option>
+                    <option value="train">Train</option>
+                    <option value="drive">Drive</option>
                   </select>
                 </div>
               </div>
 
-              <div class="search-row sliders">
-                <div class="search-group">
-                  <label>Duration: <span id="val-days" style="color:var(--primary);">2 Days</span></label>
-                  <input type="range" id="input-days" min="1" max="30" value="2" required>
+              <!-- Second Row: Counters & Submit -->
+              <div class="search-options-row">
+                
+                <div class="counter-box">
+                  <div class="cb-info">
+                    <span class="cb-label">Duration</span>
+                    <span class="cb-sub" id="days-sub">Auto-calculated</span>
+                  </div>
+                  <div class="cb-controls">
+                    <button type="button" class="btn-circle" id="btn-dec-days"><i class="fas fa-minus"></i></button>
+                    <span class="cb-val" id="val-days">2</span>
+                    <button type="button" class="btn-circle" id="btn-inc-days"><i class="fas fa-plus"></i></button>
+                  </div>
                 </div>
-                <div class="search-group">
-                  <label>Travelers: <span id="val-travelers" style="color:var(--primary);">4 People</span></label>
-                  <input type="range" id="input-travelers" min="1" max="20" value="4" required>
+
+                <div class="counter-box">
+                  <div class="cb-info">
+                    <span class="cb-label">Travelers</span>
+                    <span class="cb-sub">Ages 13 or above</span>
+                  </div>
+                  <div class="cb-controls">
+                    <button type="button" class="btn-circle" id="btn-dec-travelers"><i class="fas fa-minus"></i></button>
+                    <span class="cb-val" id="val-travelers">4</span>
+                    <button type="button" class="btn-circle" id="btn-inc-travelers"><i class="fas fa-plus"></i></button>
+                  </div>
                 </div>
-                <div class="search-group estimate-group">
-                  <div class="est-label">Estimated Total</div>
+
+                <div class="estimate-box">
+                  <div class="est-label">Estimated Total <select id="input-currency" style="border:none; background:transparent; font-weight:700; color:var(--text-main); outline:none;"><option value="INR">₹</option><option value="USD">$</option><option value="EUR">€</option><option value="GBP">£</option></select></div>
                   <div class="est-val" id="live-cost">₹0</div>
                 </div>
-                <div class="search-group">
+
+                <div class="submit-box">
                   <button type="submit" class="btn btn-primary btn-search" id="btn-submit">
+                    <i class="fas fa-search" id="btn-submit-icon"></i>
                     <span id="btn-submit-text">Search</span>
                     <i class="fas fa-spinner fa-spin" id="btn-submit-spinner" style="display:none;"></i>
                   </button>
                 </div>
-              </div>
 
+              </div>
             </form>
           </div>
 
