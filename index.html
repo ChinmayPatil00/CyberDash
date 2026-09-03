@@ -3,393 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Venture India | Hyper-Local Adventures</title>
-  <link rel="stylesheet" href="style.css?v=10.0">
+  <title>Venture 2.0 | Real-World SPA</title>
+  <link rel="stylesheet" href="style.css?v=20.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <a href="index.html" class="logo">Venture<span>India</span></a>
-    <div class="nav-links">
-      <a href="#">Expeditions</a>
-      <a href="#">Gear</a>
-      <a href="#">Log In</a>
-    </div>
-  </nav>
+  <!-- GLOBAL HEADER -->
+  <div class="container">
+    <header class="header">
+      <a href="#" class="logo" id="nav-logo">
+        <div class="logo-icon"></div>
+        Venture
+      </a>
+      <div class="user-profile" id="user-profile" style="display:none;">
+        <div class="user-avatar"></div>
+        <span id="display-username">Pilot</span>
+      </div>
+    </header>
+  </div>
 
   <div class="container">
     
-    <div class="hero">
-      <h1>Discover incredible <span style="color:var(--primary);">India.</span></h1>
-      <p>Select your vibe. We'll suggest the best local routes.</p>
-    </div>
-
-    <!-- Vibe Grid -->
-    <div class="vibe-grid glass" id="vibe-selector" style="padding: 20px;">
-      <div class="vibe-card active" data-vibe="treks">
-        <span class="vibe-icon">🏔️</span>
-        <div class="vibe-title">Treks</div>
-      </div>
-      <div class="vibe-card" data-vibe="bike">
-        <span class="vibe-icon">🏍️</span>
-        <div class="vibe-title">Bike Rides</div>
-      </div>
-      <div class="vibe-card" data-vibe="monsoon">
-        <span class="vibe-icon">🌧️</span>
-        <div class="vibe-title">Monsoon</div>
-      </div>
-      <div class="vibe-card" data-vibe="roadtrip">
-        <span class="vibe-icon">🚗</span>
-        <div class="vibe-title">Roadtrips</div>
-      </div>
-      <div class="vibe-card" data-vibe="jungle">
-        <span class="vibe-icon">🐅</span>
-        <div class="vibe-title">Safari</div>
-      </div>
-    </div>
-
-    <!-- Dynamic Suggestions Area -->
-    <div id="suggestions-area" class="suggestions-container glass">
-      <h3>🔥 Trending <span id="sug-label">Treks</span> in India</h3>
-      <div class="suggestions-scroll" id="suggestions-scroll">
-        <!-- Rendered via JS -->
-      </div>
-    </div>
-
-    <!-- MISSION MODAL (Hidden by default) -->
-    <div class="modal-overlay" id="mission-modal">
-      <div class="modal-content">
-        <div class="modal-close" id="modal-close"><i class="fas fa-times"></i></div>
-        <div class="modal-title" id="m-title">Mission Title</div>
-        <div style="color:var(--primary); font-weight:700; margin-bottom:15px;" id="m-region">Region</div>
-        <img id="m-img" class="modal-image" src="" alt="Loading...">
-        <div class="modal-desc" id="m-desc">Establishing uplink to Wikipedia for mission briefing...</div>
-        
-        <div class="modal-stats">
-          <div class="modal-stat-box">🔥 Difficulty: <span id="m-diff" style="color:var(--primary);">Hard</span></div>
-          <div class="modal-stat-box">⏱️ Duration: <span id="m-days">2 Days</span></div>
-          <div class="modal-stat-box">⛺ Base: <span id="m-base">Bari</span></div>
-          <div class="modal-stat-box">💸 Cost: <span id="m-cost">₹3000/person</span></div>
+    <!-- VIEW 1: AUTHENTICATION -->
+    <div id="view-auth" class="view active">
+      <div class="auth-wrapper">
+        <div class="auth-card">
+          <div style="font-size:3rem; margin-bottom:20px;">🚀</div>
+          <h2 style="margin-bottom:10px;">Welcome to Venture</h2>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Enter your callsign to access the terminal.</p>
+          <input type="text" id="auth-username" placeholder="e.g. Maverick" autocomplete="off">
+          <button class="btn btn-primary" id="btn-login">Initialize System</button>
         </div>
-
-        <button class="btn-generate" id="m-select-btn" style="padding:15px; font-size:1.2rem;">Select This Mission 🚀</button>
       </div>
     </div>
 
-    <!-- The Setup Form -->
-    <div class="setup-box glass">
-      <form id="trip-form">
-        
-        <input type="hidden" id="input-purpose" value="treks">
+    <!-- VIEW 2: THE EXPLORER (Trip Builder) -->
+    <div id="view-home" class="view">
+      <div class="hero">
+        <h1>Where to next, <span id="hero-name" style="color:var(--primary);">Pilot</span>?</h1>
+        <p>Select your operational parameters below.</p>
+      </div>
 
-        <div class="form-row">
-          <div class="input-group">
-            <label>Starting from (Base Village/City)</label>
-            <div class="autocomplete-wrapper">
-              <input type="text" id="input-origin" required placeholder="e.g. Bari Village" autocomplete="off">
-              <div id="autocomplete-list-origin" class="autocomplete-list"></div>
+      <!-- Vibe Grid -->
+      <div class="vibe-grid" id="vibe-selector">
+        <div class="vibe-card active" data-vibe="treks"><span class="vibe-icon">🏔️</span><div class="vibe-title">Treks</div></div>
+        <div class="vibe-card" data-vibe="bike"><span class="vibe-icon">🏍️</span><div class="vibe-title">Bike Rides</div></div>
+        <div class="vibe-card" data-vibe="monsoon"><span class="vibe-icon">🌧️</span><div class="vibe-title">Monsoon</div></div>
+        <div class="vibe-card" data-vibe="roadtrip"><span class="vibe-icon">🚗</span><div class="vibe-title">Roadtrips</div></div>
+        <div class="vibe-card" data-vibe="jungle"><span class="vibe-icon">🐅</span><div class="vibe-title">Safari</div></div>
+      </div>
+
+      <!-- Dynamic Suggestions Area -->
+      <div id="suggestions-area" style="display:none; margin-bottom: 20px;">
+        <h3 style="margin-bottom: 20px; font-size:1.2rem; display:flex; align-items:center; gap:10px;">🔥 Trending <span id="sug-label">Treks</span> in India</h3>
+        <div class="suggestions-scroll" id="suggestions-scroll"></div>
+      </div>
+
+      <!-- The Setup Form -->
+      <div class="setup-box">
+        <form id="trip-form">
+          <input type="hidden" id="input-purpose" value="treks">
+
+          <div class="form-row">
+            <div class="input-group">
+              <label>Origin Base</label>
+              <div class="autocomplete-wrapper">
+                <input type="text" id="input-origin" required placeholder="e.g. Mumbai" autocomplete="off">
+                <div id="autocomplete-list-origin" class="autocomplete-list"></div>
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Destination Dropzone</label>
+              <div class="autocomplete-wrapper">
+                <input type="text" id="input-dest" required placeholder="e.g. Kalsubai Peak" autocomplete="off">
+                <div id="autocomplete-list-dest" class="autocomplete-list"></div>
+              </div>
             </div>
           </div>
-          <div class="input-group">
-            <label>Where to (Destination)</label>
-            <div class="autocomplete-wrapper">
-              <input type="text" id="input-dest" required placeholder="e.g. Kalsubai Peak" autocomplete="off">
-              <div id="autocomplete-list-dest" class="autocomplete-list"></div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label>Launch Date</label>
+              <input type="date" id="input-date" required>
+            </div>
+            <div class="input-group">
+              <label>Currency</label>
+              <select id="input-currency" required>
+                <option value="INR">INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label>Duration: <span id="val-days" style="color:var(--text-main);">2 Days</span></label>
+              <input type="range" id="input-days" min="1" max="30" value="2" required>
+            </div>
+            <div class="input-group">
+              <label>Squad Size: <span id="val-travelers" style="color:var(--text-main);">4 People</span></label>
+              <input type="range" id="input-travelers" min="1" max="20" value="4" required>
+            </div>
+          </div>
+
+          <div style="text-align:center; padding: 20px; border-radius:8px; border: 1px solid var(--border); margin-bottom: 20px; background:var(--bg-main);">
+            <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.1em;">Live Cost Estimate</div>
+            <div id="live-cost" style="font-size:2rem; font-weight:900; color:var(--primary); margin-top:5px;">₹0</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="font-size:1.2rem; padding: 20px;">Deploy Mission 🚀</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- VIEW 3: MISSION DASHBOARD -->
+    <div id="view-dashboard" class="view">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <div>
+          <h1 style="font-size:2.5rem; margin-bottom:5px;">Operation: <span id="dash-dest" style="color:var(--primary);">Destination</span></h1>
+          <p style="color:var(--text-muted);">Originating from <span id="dash-origin" style="color:#fff;">Origin</span> • <span id="dash-days" style="color:#fff;">X</span> Days • <span id="dash-squad" style="color:#fff;">Y</span> Personnel</p>
+        </div>
+        <button class="btn" id="btn-edit" style="width:auto; margin:0;">Edit Parameters</button>
+      </div>
+
+      <div class="dashboard-grid">
+        
+        <!-- Left Column: Itinerary -->
+        <div>
+          <div class="dash-panel">
+            <div class="panel-title">
+              <span><i class="fas fa-route" style="margin-right:10px; color:var(--primary);"></i>Mission Timeline</span>
+            </div>
+            <div id="itinerary-timeline">
+              <!-- Rendered via JS -->
             </div>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="input-group">
-            <label>When?</label>
-            <input type="date" id="input-date" required>
+        <!-- Right Column: Budget & Gear -->
+        <div>
+          <div class="dash-panel">
+            <div class="panel-title">
+              <span><i class="fas fa-wallet" style="margin-right:10px; color:var(--primary);"></i>Financial Breakdown</span>
+            </div>
+            <ul class="budget-list" id="budget-list">
+              <!-- Rendered via JS -->
+            </ul>
+            <div class="budget-total" id="budget-total">₹0</div>
           </div>
-          <div class="input-group">
-            <label>Currency</label>
-            <select id="input-currency" required>
-              <option value="INR">INR (₹)</option>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="input-group">
-            <label>Duration: <span id="val-days" style="color:var(--primary); font-size:1.2rem; font-weight:900;">2 Days</span></label>
-            <input type="range" id="input-days" min="1" max="30" value="2" required>
-          </div>
-          <div class="input-group">
-            <label>Squad Size: <span id="val-travelers" style="color:var(--primary); font-size:1.2rem; font-weight:900;">4 People</span></label>
-            <input type="range" id="input-travelers" min="1" max="20" value="4" required>
+          <div class="dash-panel">
+            <div class="panel-title">
+              <span><i class="fas fa-box" style="margin-right:10px; color:var(--primary);"></i>Survival Loadout</span>
+            </div>
+            <ul class="gear-list" id="gear-list">
+              <!-- Rendered via JS -->
+            </ul>
           </div>
         </div>
 
-        <div style="text-align:center; padding: 20px; border-radius:12px; background:rgba(255,255,255,0.5); border: 1px solid var(--primary); margin-bottom: 20px;">
-          <div style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Live Cost Estimate</div>
-          <div id="live-cost" style="font-size:2.5rem; font-weight:900; color:var(--text-main);">₹0</div>
-        </div>
-
-        <button type="submit" class="btn-generate">Send It 🚀</button>
-
-      </form>
+      </div>
     </div>
 
   </div>
 
+  <!-- MISSION MODAL (Hidden by default) -->
+  <div class="modal-overlay" id="mission-modal">
+    <div class="modal-content">
+      <div class="modal-close" id="modal-close"><i class="fas fa-times"></i></div>
+      <div class="modal-title" id="m-title">Mission Title</div>
+      <div style="color:var(--primary); font-weight:700; margin-bottom:15px; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em;" id="m-region">Region</div>
+      <img id="m-img" class="modal-image" src="" alt="Loading...">
+      <div class="modal-desc" id="m-desc">Establishing uplink to Wikipedia for mission briefing...</div>
+      
+      <div class="modal-stats">
+        <div class="modal-stat-box">🔥 Difficulty<br><span id="m-diff" style="color:var(--primary); font-size:1.2rem; font-weight:900;">Hard</span></div>
+        <div class="modal-stat-box">⏱️ Duration<br><span id="m-days" style="color:#fff; font-size:1.2rem; font-weight:900;">2 Days</span></div>
+        <div class="modal-stat-box">⛺ Basecamp<br><span id="m-base" style="color:#fff; font-size:1.2rem; font-weight:900;">Bari</span></div>
+        <div class="modal-stat-box">💸 Est. Cost<br><span id="m-cost" style="color:#fff; font-size:1.2rem; font-weight:900;">₹3000</span></div>
+      </div>
+
+      <button class="btn btn-primary" id="m-select-btn" style="padding:15px; font-size:1.1rem;">Select This Mission 🚀</button>
+    </div>
+  </div>
+
   <script src="app.js"></script>
-  <script>
-    // --- Advanced Indian Adventure Database (with INR cost per day) ---
-    const indianAdventures = {
-      'treks': [
-        { title: 'Kalsubai Peak', region: 'Sahyadris, MH', base: 'Bari', dest: 'Kalsubai Peak', diff: 'Hard', days: 2, cost: 1200 },
-        { title: 'Rajmachi Trek', region: 'Lonavala, MH', base: 'Udhewadi', dest: 'Rajmachi', diff: 'Easy', days: 1, cost: 800 },
-        { title: 'Kheerganga', region: 'Parvati Valley, HP', base: 'Barshaini', dest: 'Kheerganga', diff: 'Medium', days: 3, cost: 1500 },
-        { title: 'Harishchandragad', region: 'Ahmednagar, MH', base: 'Khireshwar', dest: 'Harishchandragad', diff: 'Hard', days: 2, cost: 1300 },
-        { title: 'Sandhan Valley', region: 'Sahyadris, MH', base: 'Samrad', dest: 'Sandhan Valley', diff: 'Extreme', days: 2, cost: 1800 },
-        { title: 'Valley of Flowers', region: 'Uttarakhand', base: 'Govindghat', dest: 'Valley of Flowers', diff: 'Medium', days: 5, cost: 2000 }
-      ],
-      'bike': [
-        { title: 'Manali to Leh', region: 'Himalayas', base: 'Manali', dest: 'Leh', diff: 'Extreme', days: 10, cost: 3500 },
-        { title: 'Mumbai to Goa', region: 'Konkan Coast', base: 'Mumbai', dest: 'Goa', diff: 'Medium', days: 4, cost: 2500 },
-        { title: 'Spiti Valley Circuit', region: 'Himachal', base: 'Shimla', dest: 'Kaza', diff: 'Extreme', days: 8, cost: 3000 },
-        { title: 'Meghalaya Circuit', region: 'North East', base: 'Shillong', dest: 'Cherrapunji', diff: 'Medium', days: 5, cost: 2800 }
-      ],
-      'monsoon': [
-        { title: 'Malshej Ghat', region: 'Maharashtra', base: 'Kalyan', dest: 'Malshej Ghat', diff: 'Easy', days: 1, cost: 1500 },
-        { title: 'Amboli Ghat', region: 'Sindhudurg, MH', base: 'Sawantwadi', dest: 'Amboli', diff: 'Medium', days: 2, cost: 1800 },
-        { title: 'Coorg Safari', region: 'Karnataka', base: 'Madikeri', dest: 'Coorg', diff: 'Medium', days: 3, cost: 2200 },
-        { title: 'Tiger Point', region: 'Lonavala, MH', base: 'Khandala', dest: 'Lonavala', diff: 'Easy', days: 1, cost: 1200 }
-      ],
-      'roadtrip': [
-        { title: 'Golden Triangle', region: 'North India', base: 'Delhi', dest: 'Jaipur', diff: 'Easy', days: 5, cost: 2500 },
-        { title: 'East Coast Road', region: 'Tamil Nadu', base: 'Chennai', dest: 'Pondicherry', diff: 'Easy', days: 2, cost: 2000 }
-      ],
-      'jungle': [
-        { title: 'Ranthambore', region: 'Rajasthan', base: 'Sawai Madhopur', dest: 'Ranthambore National Park', diff: 'Easy', days: 3, cost: 4000 },
-        { title: 'Jim Corbett', region: 'Uttarakhand', base: 'Ramnagar', dest: 'Jim Corbett National Park', diff: 'Easy', days: 4, cost: 3500 },
-        { title: 'Tadoba Andhari', region: 'Maharashtra', base: 'Chandrapur', dest: 'Tadoba', diff: 'Easy', days: 3, cost: 4200 },
-        { title: 'Bandhavgarh', region: 'Madhya Pradesh', base: 'Umaria', dest: 'Bandhavgarh', diff: 'Medium', days: 3, cost: 3800 }
-      ]
-    };
-
-    // Elements
-    const vibeCards = document.querySelectorAll('.vibe-card');
-    const purposeInput = document.getElementById('input-purpose');
-    const sugArea = document.getElementById('suggestions-area');
-    const sugScroll = document.getElementById('suggestions-scroll');
-    const sugLabel = document.getElementById('sug-label');
-    const inOrigin = document.getElementById('input-origin');
-    const inDest = document.getElementById('input-dest');
-    const daysSlider = document.getElementById('input-days');
-    const daysVal = document.getElementById('val-days');
-    
-    // Modal Elements
-    const modal = document.getElementById('mission-modal');
-    const modalClose = document.getElementById('modal-close');
-    const mTitle = document.getElementById('m-title');
-    const mRegion = document.getElementById('m-region');
-    const mImg = document.getElementById('m-img');
-    const mDesc = document.getElementById('m-desc');
-    const mDiff = document.getElementById('m-diff');
-    const mDays = document.getElementById('m-days');
-    const mBase = document.getElementById('m-base');
-    const mCost = document.getElementById('m-cost');
-    const mSelectBtn = document.getElementById('m-select-btn');
-
-    let currentSelectedItem = null;
-
-    modalClose.addEventListener('click', () => modal.classList.remove('active'));
-    
-    function openModal(item) {
-      currentSelectedItem = item;
-      mTitle.innerText = item.title;
-      mRegion.innerText = item.region;
-      mDiff.innerText = item.diff;
-      mDays.innerText = `${item.days} Days`;
-      mBase.innerText = item.base;
-      mCost.innerText = `₹${item.cost} / day / person`;
-      
-      mImg.src = '';
-      mDesc.innerText = 'Establishing uplink to Wikipedia for mission briefing...';
-      modal.classList.add('active');
-
-      // Live Wikipedia Fetch for Modal
-      const searchStr = `${item.dest} ${item.region}`;
-      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=1&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=800&exsentences=4&exintro=1&explaintext=1&format=json&origin=*`;
-      
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          if(data.query && data.query.pages) {
-            const p = Object.values(data.query.pages)[0];
-            if(p.extract) mDesc.innerText = p.extract;
-            if(p.thumbnail && p.thumbnail.source) {
-              mImg.src = p.thumbnail.source;
-            } else {
-              mImg.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Kalsubai_peak.jpg/800px-Kalsubai_peak.jpg'; // Fallback
-            }
-          } else {
-            mDesc.innerText = 'Wiki Database offline for this coordinate. Await manual briefing.';
-          }
-        });
-    }
-
-    mSelectBtn.addEventListener('click', () => {
-      if(currentSelectedItem) {
-        inOrigin.value = currentSelectedItem.base;
-        inDest.value = currentSelectedItem.dest;
-        daysSlider.value = currentSelectedItem.days;
-        daysVal.innerText = `${currentSelectedItem.days} Days`;
-        updateLiveEstimate();
-        
-        document.querySelectorAll('.suggestion-card').forEach(c => c.style.borderColor = 'transparent');
-      }
-      modal.classList.remove('active');
-    });
-
-    function renderSuggestions(vibe) {
-      const data = indianAdventures[vibe];
-      if (!data) {
-        sugArea.style.display = 'none';
-        return;
-      }
-      
-      sugArea.style.display = 'block';
-      sugLabel.innerText = document.querySelector(`.vibe-card[data-vibe="${vibe}"] .vibe-title`).innerText;
-      sugScroll.innerHTML = '';
-
-      data.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'suggestion-card';
-        card.innerHTML = `
-          <div class="sug-title">${item.title}</div>
-          <div class="sug-meta">
-            <span>📍 ${item.region}</span>
-            <span>🔥 Diff: <strong>${item.diff}</strong></span>
-            <span>⏱️ ${item.days} Days | ⛺ Base: ${item.base}</span>
-          </div>
-        `;
-        card.addEventListener('click', () => openModal(item));
-        sugScroll.appendChild(card);
-      });
-    }
-
-    // Handle Vibe Selection
-    vibeCards.forEach(card => {
-      card.addEventListener('click', () => {
-        vibeCards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        const vibe = card.getAttribute('data-vibe');
-        purposeInput.value = vibe;
-        renderSuggestions(vibe);
-        updateLiveEstimate();
-      });
-    });
-
-    // Init
-    renderSuggestions('treks');
-
-    // Set default date to tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('input-date').valueAsDate = tomorrow;
-
-    // --- Interactive Sliders ---
-    daysSlider.addEventListener('input', (e) => {
-      daysVal.innerText = `${e.target.value} Days`;
-      updateLiveEstimate();
-    });
-
-    const travelersSlider = document.getElementById('input-travelers');
-    const travelersVal = document.getElementById('val-travelers');
-    travelersSlider.addEventListener('input', (e) => {
-      travelersVal.innerText = `${e.target.value} People`;
-      updateLiveEstimate();
-    });
-
-    const currencySelect = document.getElementById('input-currency');
-    currencySelect.addEventListener('change', updateLiveEstimate);
-
-    // --- Live Estimate Engine ---
-    function updateLiveEstimate() {
-      const days = parseInt(daysSlider.value, 10);
-      const travelers = parseInt(travelersSlider.value, 10);
-      const purpose = purposeInput.value;
-      const currency = currencySelect.value;
-
-      const exchangeRates = { 'USD': 1.0, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.1 };
-      const rate = exchangeRates[currency] || 83.1; // fallback
-
-      const budgetData = {
-        'treks': 60, 'bike': 120, 'monsoon': 80, 'roadtrip': 100,
-        'jungle': 150
-      };
-
-      const baseDailyCostUSD = budgetData[purpose] || 60;
-      const totalUSD = baseDailyCostUSD * days * travelers;
-      
-      // If INR is selected, don't multiply by 83.1 twice. 
-      // Base costs are in USD, so we multiply by INR rate to get INR.
-      const finalCost = currency === 'USD' ? totalUSD : totalUSD * rate;
-
-      const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency, maximumFractionDigits: 0 });
-      document.getElementById('live-cost').innerText = formatter.format(finalCost);
-    }
-
-    updateLiveEstimate();
-
-    // --- Autocomplete Engine via Nominatim API ---
-    function setupAutocomplete(inputId, listId) {
-      const input = document.getElementById(inputId);
-      const list = document.getElementById(listId);
-      let timeout = null;
-
-      input.addEventListener('input', () => {
-        clearTimeout(timeout);
-        const val = input.value;
-        if (!val) {
-          list.style.display = 'none';
-          return;
-        }
-
-        timeout = setTimeout(() => {
-          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&limit=5`)
-            .then(res => res.json())
-            .then(data => {
-              list.innerHTML = '';
-              if (data.length > 0) {
-                list.style.display = 'block';
-                data.forEach(item => {
-                  const div = document.createElement('div');
-                  div.className = 'autocomplete-item';
-                  div.innerText = item.display_name;
-                  div.addEventListener('click', () => {
-                    input.value = item.display_name.split(',')[0]; 
-                    list.style.display = 'none';
-                  });
-                  list.appendChild(div);
-                });
-              } else {
-                list.style.display = 'none';
-              }
-            })
-            .catch(() => { list.style.display = 'none'; });
-        }, 300);
-      });
-
-      document.addEventListener('click', (e) => {
-        if (e.target !== input && e.target !== list) {
-          list.style.display = 'none';
-        }
-      });
-    }
-
-    setupAutocomplete('input-origin', 'autocomplete-list-origin');
-    setupAutocomplete('input-dest', 'autocomplete-list-dest');
-  </script>
 </body>
 </html>
