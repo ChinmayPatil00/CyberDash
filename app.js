@@ -102,6 +102,11 @@ function renderSuggestions(vibe) {
     card.addEventListener('click', () => {
       inOrigin.value = item.base;
       inDest.value = item.dest;
+      
+      // Force geocoder on next submit
+      inOrigin.dataset.resolvedFor = '';
+      inDest.dataset.resolvedFor = '';
+
       tripDays = item.days;
       valDays.innerText = tripDays;
       purposeInput.value = vibe;
@@ -210,6 +215,7 @@ function setupAutocomplete(inputId, listId) {
                 input.value = item.display_name.split(',')[0];
                 input.dataset.lat = item.lat;
                 input.dataset.lon = item.lon;
+                input.dataset.resolvedFor = input.value;
                 list.style.display = 'none'; 
                 
                 // Smart Calculation logic
@@ -249,6 +255,17 @@ setupAutocomplete('input-dest', 'autocomplete-list-dest');
 let currentPlan = null;
 let leafletMap = null;
 
+async function resolveCoords(query) {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return { lat: data[0].lat, lon: data[0].lon };
+    }
+  } catch (e) { console.error("Geocoding failed", e); }
+  return null;
+}
+
 document.getElementById('trip-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -260,13 +277,28 @@ document.getElementById('trip-form').addEventListener('submit', async (e) => {
   btnSubmitText.style.display = 'none';
   btnSubmitSpinner.style.display = 'inline-block';
   
+  let oLat = inOrigin.dataset.lat;
+  let oLon = inOrigin.dataset.lon;
+  let dLat = inDest.dataset.lat;
+  let dLon = inDest.dataset.lon;
+  
+  // Just-In-Time Geocoding: If the user didn't click autocomplete or clicked a trending card, resolve now
+  if (!oLat || inOrigin.dataset.resolvedFor !== inOrigin.value) {
+    const coords = await resolveCoords(inOrigin.value);
+    if (coords) { oLat = coords.lat; oLon = coords.lon; inOrigin.dataset.lat = oLat; inOrigin.dataset.lon = oLon; inOrigin.dataset.resolvedFor = inOrigin.value; }
+  }
+  if (!dLat || inDest.dataset.resolvedFor !== inDest.value) {
+    const coords = await resolveCoords(inDest.value);
+    if (coords) { dLat = coords.lat; dLon = coords.lon; inDest.dataset.lat = dLat; inDest.dataset.lon = dLon; inDest.dataset.resolvedFor = inDest.value; }
+  }
+  
   currentPlan = {
     origin: inOrigin.value,
-    originLat: inOrigin.dataset.lat || '19.0760',
-    originLon: inOrigin.dataset.lon || '72.8777',
+    originLat: oLat || '19.0760',
+    originLon: oLon || '72.8777',
     dest: inDest.value,
-    lat: inDest.dataset.lat || '19.0760',
-    lon: inDest.dataset.lon || '72.8777',
+    lat: dLat || '19.0760',
+    lon: dLon || '72.8777',
     date: inputDate.value,
     currency: currencySelect.value,
     days: tripDays,
