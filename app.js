@@ -32,34 +32,32 @@ btnLogin.addEventListener('click', () => {
 
 // 2. The Explorer (Home) Logic
 const vibeNames = {
-  'cities': 'City Escapes',
-  'beaches': 'Beach Holidays',
-  'backpacking': 'Backpacking',
-  'luxury': 'Luxury Stays',
-  'roadtrip': 'Roadtrips'
+  'treks': 'Trending Treks',
+  'bike': 'Bike Routes',
+  'monsoon': 'Monsoon Getaways',
+  'roadtrip': 'Epic Roadtrips',
+  'jungle': 'Wildlife Safaris'
 };
 
-const globalDestinations = {
-  'cities': [
-    { title: 'Paris Getaway', region: 'France', img: 'https://images.unsplash.com/photo-1502602898657-3e90760020c4?q=80&w=800&auto=format&fit=crop', base: 'London', dest: 'Paris', days: 4, cost: 20000 },
-    { title: 'Dubai Skyline', region: 'UAE', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800&auto=format&fit=crop', base: 'Mumbai', dest: 'Dubai', days: 5, cost: 15000 },
-    { title: 'Tokyo Nights', region: 'Japan', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=800&auto=format&fit=crop', base: 'Delhi', dest: 'Tokyo', days: 7, cost: 25000 },
-    { title: 'New York City', region: 'USA', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=800&auto=format&fit=crop', base: 'London', dest: 'New York', days: 6, cost: 30000 }
+const indianAdventures = {
+  'treks': [
+    { title: 'Kalsubai Peak', region: 'Sahyadris, MH', img: 'https://images.unsplash.com/photo-1623120381656-788005391d8e?q=80&w=800&auto=format&fit=crop', base: 'Bari', dest: 'Kalsubai Peak', days: 2, cost: 1200 },
+    { title: 'Valley of Flowers', region: 'Uttarakhand', img: 'https://images.unsplash.com/photo-1605221941655-b4618e7d23d8?q=80&w=800&auto=format&fit=crop', base: 'Govindghat', dest: 'Valley of Flowers', days: 5, cost: 2000 },
+    { title: 'Kheerganga', region: 'Parvati Valley, HP', img: 'https://images.unsplash.com/photo-1626279148766-3d2b0e99ab67?q=80&w=800&auto=format&fit=crop', base: 'Barshaini', dest: 'Kheerganga', days: 3, cost: 1500 },
+    { title: 'Sandhan Valley', region: 'Sahyadris, MH', img: 'https://images.unsplash.com/photo-1596706788880-9cc2e6b194a2?q=80&w=800&auto=format&fit=crop', base: 'Samrad', dest: 'Sandhan Valley', days: 2, cost: 1800 }
   ],
-  'beaches': [
-    { title: 'Bali Retreat', region: 'Indonesia', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=800&auto=format&fit=crop', base: 'Singapore', dest: 'Bali', days: 6, cost: 12000 },
-    { title: 'Maldives Paradise', region: 'Maldives', img: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=800&auto=format&fit=crop', base: 'Colombo', dest: 'Malé', days: 5, cost: 40000 }
+  'bike': [
+    { title: 'Manali to Leh', region: 'Himalayas', img: 'https://images.unsplash.com/photo-1583095123963-71e19d08e5be?q=80&w=800&auto=format&fit=crop', base: 'Manali', dest: 'Leh', days: 10, cost: 3500 },
+    { title: 'Spiti Valley Circuit', region: 'Himachal', img: 'https://images.unsplash.com/photo-1626027142467-96a2bd3a0c20?q=80&w=800&auto=format&fit=crop', base: 'Shimla', dest: 'Kaza', days: 8, cost: 3000 }
   ],
-  'backpacking': [
-    { title: 'Hanoi Trails', region: 'Vietnam', img: 'https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800&auto=format&fit=crop', base: 'Bangkok', dest: 'Hanoi', days: 10, cost: 8000 },
-    { title: 'Swiss Alps', region: 'Switzerland', img: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800&auto=format&fit=crop', base: 'Zurich', dest: 'Zermatt', days: 5, cost: 35000 }
-  ],
-  'luxury': [
-    { title: 'Santorini Villa', region: 'Greece', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop', base: 'Athens', dest: 'Santorini', days: 4, cost: 50000 },
-    { title: 'Bora Bora Overwater', region: 'French Polynesia', img: 'https://images.unsplash.com/photo-1589394815804-964ce0fa58f0?q=80&w=800&auto=format&fit=crop', base: 'Papeete', dest: 'Bora Bora', days: 7, cost: 80000 }
+  'monsoon': [
+    { title: 'Malshej Ghat', region: 'Maharashtra', img: 'https://images.unsplash.com/photo-1600870933215-6d0eb0cb4baf?q=80&w=800&auto=format&fit=crop', base: 'Kalyan', dest: 'Malshej Ghat', days: 1, cost: 1500 }
   ],
   'roadtrip': [
-    { title: 'Route 66', region: 'USA', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop', base: 'Chicago', dest: 'Los Angeles', days: 14, cost: 15000 }
+    { title: 'Golden Triangle', region: 'North India', img: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=800&auto=format&fit=crop', base: 'Delhi', dest: 'Jaipur', days: 5, cost: 2500 }
+  ],
+  'jungle': [
+    { title: 'Ranthambore', region: 'Rajasthan', img: 'https://images.unsplash.com/photo-1596707328905-1a8db39fb399?q=80&w=800&auto=format&fit=crop', base: 'Sawai Madhopur', dest: 'Ranthambore National Park', days: 3, cost: 4000 }
   ]
 };
 
@@ -85,7 +83,7 @@ function renderSuggestions(vibe) {
   sugArea.style.display = 'block';
   sugLabel.innerText = vibeNames[vibe];
   sugScroll.innerHTML = '';
-  const data = globalDestinations[vibe];
+  const data = indianAdventures[vibe];
   if (!data || data.length === 0) { sugArea.style.display = 'none'; return; }
   
   data.forEach(item => {
@@ -137,7 +135,7 @@ vibeTabs.forEach(tab => {
   });
 });
 
-renderSuggestions('cities');
+renderSuggestions('treks');
 
 let tripDays = 2;
 let tripTravelers = 4;
@@ -154,8 +152,8 @@ currencySelect.addEventListener('change', updateLiveEstimate);
 document.getElementById('input-transport').addEventListener('change', updateLiveEstimate);
 
 function getBaseCost(purpose) {
-  const budgetData = { 'cities': 5000, 'beaches': 8000, 'backpacking': 2500, 'luxury': 25000, 'roadtrip': 4000 };
-  return budgetData[purpose] || 5000;
+  const budgetData = { 'treks': 1200, 'bike': 3500, 'monsoon': 1500, 'roadtrip': 2500, 'jungle': 4000 };
+  return budgetData[purpose] || 1500;
 }
 
 // Reuse Haversine for live estimate calculation
@@ -379,13 +377,13 @@ async function generateDashboard(plan) {
   }
 
   const budgetData = {
-    'cities': { labels: ['Boutique Hotel', 'Dining & Cafes', 'Local Transit', 'Museums/Tours'] },
-    'beaches': { labels: ['Beach Resort', 'Seafood & Drinks', 'Transfers', 'Water Sports'] },
-    'backpacking': { labels: ['Hostel Stay', 'Street Food', 'Bus/Train', 'Experiences'] },
-    'luxury': { labels: ['5-Star Villa', 'Fine Dining', 'Private Chauffeur', 'Spa & Yacht'] },
-    'roadtrip': { labels: ['Highway Motels', 'Diners & Snacks', 'Car Rental/Gas', 'Tolls/Parking'] }
+    'treks': { labels: ['Basecamp/Tents', 'Trail Rations', 'Transport/Guides', 'Permits'] },
+    'bike': { labels: ['Stays & Motels', 'Roadhouse Meals', 'Bike Rental/Fuel', 'Tolls/Misc'] },
+    'monsoon': { labels: ['Rainforest Lodges', 'Local Cafes', 'Transport', 'Fees'] },
+    'roadtrip': { labels: ['Highway Motels', 'Diners & Snacks', 'Car Rental/Gas', 'Tolls/Parking'] },
+    'jungle': { labels: ['Safari Lodge', 'Meals', 'Jeep & Guide Hire', 'Forest Fees'] }
   };
-  const bData = budgetData[plan.purpose] || budgetData['cities'];
+  const bData = budgetData[plan.purpose] || budgetData['treks'];
   const baseCost = getBaseCost(plan.purpose);
   let baseINR = baseCost * plan.days * plan.travelers;
   let expenses = [];
@@ -427,8 +425,8 @@ async function generateDashboard(plan) {
   expenses = [
     { label: transportLabel, amount: transportCost * rate },
     { label: lastMileLabel, amount: lastMileCost * rate },
-    { label: bData.labels[0], amount: (remain * 0.6) * rate },
-    { label: bData.labels[1] + ' & Activities', amount: (remain * 0.4) * rate }
+    { label: bData.labels[0] + ' / Stays', amount: (remain * 0.6) * rate },
+    { label: 'Food & Logistics', amount: (remain * 0.4) * rate }
   ];
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: plan.currency, maximumFractionDigits: 0 });
@@ -461,14 +459,14 @@ async function generateDashboard(plan) {
   }
 
   const gearMap = {
-    'cities': ['Comfortable Sneakers', 'Daypack', 'Power Bank', 'Travel Adapter'],
-    'beaches': ['Sunscreen SPF 50+', 'Swimwear', 'Polarized Sunglasses', 'Beach Towel'],
-    'backpacking': ['65L Rucksack', 'First Aid Kit', 'Water Purifier', 'Headlamp'],
-    'luxury': ['Evening Wear', 'Noise-Cancelling Headphones', 'Kindle/Book', 'Premium Sunglasses'],
-    'roadtrip': ['Aux Cable', 'Car Charger', 'Snack Cooler', 'Emergency Toolkit']
+    'treks': ['65L Rucksack', 'First Aid Kit', 'Water Purifier', 'Headlamp'],
+    'bike': ['Riding Jacket', 'Full-face Helmet', 'Tool Kit', 'Hydration Pack'],
+    'monsoon': ['Trekking Shoes', 'Anti-leech Socks'],
+    'roadtrip': ['Aux Cable', 'Car Charger', 'Snack Cooler', 'Emergency Toolkit'],
+    'jungle': ['Binoculars', 'Camouflage Clothing', 'Mosquito Repellent', 'Safari Hat']
   };
   
-  let finalGear = gearMap[plan.purpose] || gearMap['cities'];
+  let finalGear = gearMap[plan.purpose] || gearMap['treks'];
   let dynamicGearHtml = '';
 
   finalGear.forEach(item => {
@@ -479,20 +477,20 @@ async function generateDashboard(plan) {
     dynamicGearHtml += `<li class="gear-item"><div style="display:flex; align-items:center;"><input type="checkbox" checked> <span>Thermal Layers</span></div> <span class="reason" style="background:#e0f7fa; color:#006064;">Cold</span></li>`;
   }
   if(isRaining) {
-    dynamicGearHtml += `<li class="gear-item"><div style="display:flex; align-items:center;"><input type="checkbox" checked> <span>Waterproof Umbrella</span></div> <span class="reason" style="background:#e8eaf6; color:#283593;">Rain</span></li>`;
+    dynamicGearHtml += `<li class="gear-item"><div style="display:flex; align-items:center;"><input type="checkbox" checked> <span>Waterproof Poncho</span></div> <span class="reason" style="background:#e8eaf6; color:#283593;">Rain</span></li>`;
   }
   
   gearList.innerHTML = dynamicGearHtml;
 
   // 4. Itinerary Generation & Hero Image
   const routeData = {
-    'cities': { search: 'city center and landmarks', start: 'Check into the boutique hotel.', end: 'Checkout and head to the airport.' },
-    'beaches': { search: 'beaches and resorts', start: 'Check into the beachfront resort.', end: 'Pack up the swimwear.' },
-    'backpacking': { search: 'mountains and hiking trails', start: 'Hit the trail.', end: 'Complete the circuit.' },
-    'luxury': { search: 'luxury resorts and spas', start: 'Private transfer to the villa.', end: 'Checkout from the luxury suite.' },
-    'roadtrip': { search: 'famous highways', start: 'Load up the trunk and hit the road.', end: 'Pull into the final rest stop.' }
+    'treks': { search: 'mountains and hiking trails', start: 'Hit the trailhead basecamp.', end: 'Summit achieved. Hike out.' },
+    'bike': { search: 'scenic motorcycle routes', start: 'Grab the bikes. Hit the highway.', end: 'Return the motorcycles.' },
+    'monsoon': { search: 'waterfalls and hills', start: 'Throw on the wet-weather gear.', end: 'Dry off at the final stop.' },
+    'roadtrip': { search: 'famous highways', start: 'Load up the trunk and merge onto the interstate.', end: 'Pull into the final rest stop.' },
+    'jungle': { search: 'national parks and wildlife', start: 'Meet your local ranger.', end: 'Emerge from the dense foliage.' }
   };
-  const rData = routeData[plan.purpose] || routeData['cities'];
+  const rData = routeData[plan.purpose] || routeData['treks'];
   // QA FIX: Search exactly for the destination instead of appending generic strings
   const searchStr = `${plan.dest}`;
   const attractionsUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(searchStr)}&gsrlimit=10&prop=pageimages|extracts&piprop=thumbnail&pithumbsize=1200&exsentences=3&exintro=1&explaintext=1&format=json&origin=*`;
